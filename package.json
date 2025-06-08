@@ -1,0 +1,22 @@
+{
+  "name": "procedural-island-generator",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix"
+  },
+  "dependencies": {
+    "three": "^0.177.0"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^4.14.1",
+    "@types/three": "^0.177.0",
+    "eslint": "^9.28.0",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5"
+  }
+}
