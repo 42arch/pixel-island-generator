@@ -10,10 +10,15 @@
     "lint:fix": "eslint --fix"
   },
   "dependencies": {
-    "three": "^0.177.0"
+    "alea": "^1.0.1",
+    "ogl": "^1.0.11",
+    "simplex-noise": "^4.0.3",
+    "three": "^0.177.0",
+    "tweakpane": "^4.0.5"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.14.1",
+    "@tweakpane/core": "^2.0.5",
     "@types/three": "^0.177.0",
     "eslint": "^9.28.0",
     "typescript": "~5.8.3",
