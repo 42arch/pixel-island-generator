@@ -10,6 +10,16 @@ export interface NoiseOptions {
   redistribution?: number
 }
 
+export function simplex(x: number, y: number, options: NoiseOptions) {
+  const {
+    seed,
+  } = options
+
+  const prng = alea(seed)
+  const noise = createNoise2D(prng)
+  return noise(x, y)
+}
+
 export function fbm(x: number, y: number, options: NoiseOptions) {
   const {
     seed,
@@ -33,11 +43,18 @@ export function fbm(x: number, y: number, options: NoiseOptions) {
     const ny = y * scale * frequency
     const noiseValue = noise(nx, ny)
 
-    result += (noiseValue * 0.5 + 0.5) * amplitude
+    // result += (noiseValue * 0.5 + 0.5) * amplitude
+    result += (noiseValue) * amplitude
+
     frequency *= lacunarity
     amplitude *= persistance
     max += amplitude
   }
-  const redistributed = result ** redistribution
-  return redistributed / max
+
+  const normalized = (result / max) * 0.5 + 0.5
+  // const redistributed = normalized ** redistribution
+  // return redistributed / max
+
+  const redistributed = normalized ** redistribution
+  return redistributed
 }
