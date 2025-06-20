@@ -1,20 +1,24 @@
 import { Color } from 'ogl'
 
+export function getGreyColor(elevation: number) {
+  return [elevation, elevation, elevation, 1]
+}
+
 export function getElevationColor(
   elevation: number,
   seaLevel: number,
 ): [number, number, number, number] {
   const colors = {
     snow: {
-      value: 0.6,
+      value: 0.3,
       color: '#9aa7ad',
     },
     stone: {
-      value: 0.36,
+      value: 0.25,
       color: '#656565',
     },
     forest: {
-      value: 0.29,
+      value: 0.2,
       color: '#586647',
     },
     shrub: {

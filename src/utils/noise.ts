@@ -52,9 +52,33 @@ export function fbm(x: number, y: number, options: NoiseOptions) {
   }
 
   const normalized = (result / max) * 0.5 + 0.5
-  // const redistributed = normalized ** redistribution
-  // return redistributed / max
-
   const redistributed = normalized ** redistribution
   return redistributed
+
+  // const redistributed = result ** redistribution
+  // return redistributed / max
+}
+
+export function fallOff(x: number, y: number, size: number) {
+  // const cx = size / 2
+  // const cy = size / 2
+  // const maxDist = cx
+  // const dx = Math.abs(x - cx)
+  // const dy = Math.abs(y - cy)
+  // const dist = Math.max(dx, dy) / maxDist
+  // const gray = Math.floor(dist)
+  // return gray
+  const n = size
+  const i = x
+  const j = y
+  const maxVal = Math.floor(n / 2)
+
+  const v = Math.floor(
+    (n - 1 - Math.min(
+      Math.abs(n - 1 - 2 * i),
+      Math.abs(n - 1 - 2 * j),
+    )) / 2,
+  )
+
+  return v / maxVal
 }

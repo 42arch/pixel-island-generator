@@ -1,9 +1,8 @@
-import type { Mesh } from 'three'
 import type { OrbitControls } from 'three/examples/jsm/Addons.js'
-import { Color, Float32BufferAttribute, Group, InstancedBufferAttribute, InstancedMesh, MeshBasicMaterial, Object3D, PerspectiveCamera, PlaneGeometry, Scene, WebGLRenderer } from 'three'
+import { Float32BufferAttribute, Group, Mesh, MeshBasicMaterial, PerspectiveCamera, PlaneGeometry, Scene, WebGLRenderer } from 'three'
 import { Pane } from 'tweakpane'
-import { getElevationColor, getGreyColor } from './utils/color'
-import { fallOff, fbm, type NoiseOptions, simplex } from './utils/noise'
+import { getElevationColor } from './utils/color'
+import { fbm, type NoiseOptions, simplex } from './utils/noise'
 
 interface Point {
   x: number
@@ -38,7 +37,7 @@ class Viewer {
       antialias: true,
     })
     this.camera = new PerspectiveCamera(50, this.width / this.height, 0.1, 1000)
-    this.camera.position.z = 1000
+    this.camera.position.z = 100
 
     this.dom.appendChild(this.renderer.domElement)
     this.scene = new Scene()
@@ -78,64 +77,57 @@ class Viewer {
   }
 
   generateElevations() {
-    const cellSize = this.params.cellSize
+    if (!this.grid)
+      return
+    const vertices = this.grid.geometry.attributes.position
+    const colors = []
     const elevations = []
-    const size = Math.min(this.width, this.height)
-    const cols = Math.floor(size / this.params.cellSize)
-    const rows = Math.floor(size / this.params.cellSize)
-    const totalTiles = cols * rows
+    const width = 40
+    const height = 40
 
-    const geometry = new PlaneGeometry(cellSize, cellSize)
-    const material = new MeshBasicMaterial({
-      // vertexColors: true,
-      wireframe: false,
-    })
-    const mesh = new InstancedMesh(geometry, material, totalTiles)
-    mesh.instanceColor = new InstancedBufferAttribute(new Float32Array(totalTiles * 3), 3)
+    for (let i = 0; i < vertices.count; i++) {
+      const x = vertices.getX(i)
+      const y = vertices.getY(i)
+      // 归一化到 0~1
+      const u = (x + width / 2) / width
+      const v = (y + height / 2) / height
 
-    const dummy = new Object3D()
-    let index = 0
-
-    for (let x = 0; x < cols; x++) {
-      for (let y = 0; y < rows; y++) {
-        const px = (-x + Math.floor(cols / 2)) * cellSize
-        const py = (-y + Math.floor(rows / 2)) * cellSize
-        const u = x / cols
-        const v = y / rows
-
-        // const heightValue = fbm(u, v, {
-        //   seed: this.params.noise.seed,
-        //   scale: this.params.noise.scale,
-        //   persistance: this.params.noise.persistance,
-        //   lacunarity: this.params.noise.lacunarity,
-        //   octaves: this.params.noise.octaves,
-        //   redistribution: this.params.noise.redistribution,
-        // })
-
-        const heightValue = fallOff(x, y, size)
-
-        console.log(heightValue)
-        // const height = heightValue * falloffValue
-        // const color = getElevationColor(falloffValue, 0.4)
-        const color = getGreyColor(heightValue)
-
-        dummy.position.set(
-          px,
-          py,
-          0,
-        )
-        dummy.updateMatrix()
-        mesh.setMatrixAt(index, dummy.matrix)
-        mesh.instanceColor.setXYZ(index, color[0], color[1], color[2])
-        index++
-      }
+      const elevation = fbm(u, v, {
+        seed: this.params.noise.seed,
+        scale: this.params.noise.scale,
+        persistance: this.params.noise.persistance,
+        lacunarity: this.params.noise.lacunarity,
+        octaves: this.params.noise.octaves,
+        redistribution: this.params.noise.redistribution,
+      })
+      elevations.push(elevation)
+      vertices.setZ(i, 0)
+      const color = getElevationColor(elevation, 0.48)
+      colors.push(color[0], color[1], color[2])
+      // colors.push(elevation, elevation, elevation)
+      // const color = getColorFromBands(normalizedHeight, colorBands)
+      // colors.push(color.r, color.g, color.b)
     }
 
-    this.scene.add(mesh)
+    console.log(vertices.count, elevations.length)
+    vertices.needsUpdate = true
+    this.grid.geometry.setAttribute(
+      'color',
+      new Float32BufferAttribute(colors, 3),
+    )
+    this.grid.geometry.attributes.color.needsUpdate = true
+  }
+
+  renderGrid() {
+    const geometry = new PlaneGeometry(100, 100, 40, 40)
+    const material = new MeshBasicMaterial({ color: 0xFFFFFF, vertexColors: true, wireframe: false })
+    this.grid = new Mesh(geometry, material)
+    this.scene.add(this.grid)
   }
 
   render() {
     // this.renderGrid()
+    this.renderGrid()
     this.generateElevations()
   }
 
@@ -147,7 +139,7 @@ class Viewer {
 }
 
 const params: Params = {
-  cellSize: 50,
+  cellSize: 3,
   noise: {
     seed: 1989,
     scale: 1,
