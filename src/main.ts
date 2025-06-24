@@ -1,211 +1,256 @@
-import type { Mesh } from 'three'
-import type { OrbitControls } from 'three/examples/jsm/Addons.js'
-import { Color, Float32BufferAttribute, Group, InstancedBufferAttribute, InstancedMesh, MeshBasicMaterial, Object3D, PerspectiveCamera, PlaneGeometry, Scene, WebGLRenderer } from 'three'
+/* eslint-disable ts/no-unsafe-assignment */
+import {
+  AmbientLight,
+  AxesHelper,
+  Clock,
+  DirectionalLight,
+  DoubleSide,
+  Group,
+  Mesh,
+  PerspectiveCamera,
+  PlaneGeometry,
+  Scene,
+  ShaderMaterial,
+  WebGLRenderer,
+} from 'three'
+import { OrbitControls } from 'three/examples/jsm/Addons.js'
 import { Pane } from 'tweakpane'
-import { getElevationColor, getGreyColor } from './utils/color'
-import { fallOff, fbm, type NoiseOptions, simplex } from './utils/noise'
-
-interface Point {
-  x: number
-  y: number
-}
+import fbmFragement from './shaders/fbm/main.frag'
+import fbmVertex from './shaders/fbm/main.vert'
 
 interface Params {
+  size: number
   cellSize: number
-  noise: NoiseOptions
+  opacity: number
+  axes: boolean
+  noise: {
+    seed: number
+    scale: number
+    octaves: number
+    lacunarity: number
+    persistance: number
+    redistribution: number
+  }
 }
 
-class Viewer {
-  private dom: HTMLDivElement
-  private params: Params
-  private width: number = 0
-  private height: number = 0
-  private dpr: number = Math.min(window.devicePixelRatio, 2)
+class View {
+  private width: number
+  private height: number
+  private pixelRatio: number
+  private canvas: HTMLElement
+  private scene: Scene
+  private camera: PerspectiveCamera
   private renderer: WebGLRenderer
   private controls: OrbitControls
-  private camera: PerspectiveCamera
-  private scene: Scene
+  private clock: Clock
+  private group: Group
+  private params: Params
 
-  private grid?: Mesh
-
-  private points: Point[] = []
-  private centers: Point[] = []
-
-  constructor(dom: HTMLDivElement, params: Params) {
-    this.dom = dom
+  constructor(element: string, params: Params) {
+    this.canvas = document.querySelector(element) as HTMLElement
     this.params = params
+    this.width = window.innerWidth
+    this.height = window.innerHeight
+    this.pixelRatio = Math.min(window.devicePixelRatio, 2)
+    this.scene = new Scene()
+    this.camera = new PerspectiveCamera(
+      75,
+      this.width / this.height,
+      0.001,
+      10000,
+    )
+    this.camera.position.set(0, 0, this.params.size)
+    this.scene.add(this.camera)
     this.renderer = new WebGLRenderer({
+      canvas: this.canvas,
       antialias: true,
     })
-    this.camera = new PerspectiveCamera(50, this.width / this.height, 0.1, 1000)
-    this.camera.position.z = 1000
 
-    this.dom.appendChild(this.renderer.domElement)
-    this.scene = new Scene()
-    this.scene.add(this.camera)
+    this.renderer.setSize(this.width, this.height)
+    this.renderer.setPixelRatio(this.pixelRatio)
 
-    // this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    // this.controls.enableDamping = true
+    this.controls = new OrbitControls(this.camera, this.canvas)
+    this.controls.enableDamping = true
+    this.clock = new Clock()
+
+    this.group = new Group()
+    this.scene.add(this.group)
 
     this.resize()
-    this.update()
+    this.addLight()
     this.render()
+    this.animate()
   }
 
   resize() {
-    const _resize = () => {
-      this.width = this.dom.clientWidth
-      this.height = this.dom.clientHeight
-
-      console.log('resize', this.width, this.height)
+    window.addEventListener('resize', () => {
+      this.width = window.innerWidth
+      this.height = window.innerHeight
 
       this.camera.aspect = this.width / this.height
       this.camera.updateProjectionMatrix()
 
       this.renderer.setSize(this.width, this.height)
-      this.renderer.setPixelRatio(this.dpr)
-    }
-    window.addEventListener('resize', _resize)
-    _resize()
-  }
-
-  update() {
-    const _update = (t: number) => {
-      requestAnimationFrame(_update)
-      this.renderer.render(this.scene, this.camera)
-    }
-    requestAnimationFrame(_update)
-  }
-
-  generateElevations() {
-    const cellSize = this.params.cellSize
-    const elevations = []
-    const size = Math.min(this.width, this.height)
-    const cols = Math.floor(size / this.params.cellSize)
-    const rows = Math.floor(size / this.params.cellSize)
-    const totalTiles = cols * rows
-
-    const geometry = new PlaneGeometry(cellSize, cellSize)
-    const material = new MeshBasicMaterial({
-      // vertexColors: true,
-      wireframe: false,
+      this.renderer.setPixelRatio(this.pixelRatio)
     })
-    const mesh = new InstancedMesh(geometry, material, totalTiles)
-    mesh.instanceColor = new InstancedBufferAttribute(new Float32Array(totalTiles * 3), 3)
+  }
 
-    const dummy = new Object3D()
-    let index = 0
+  animate() {
+    const delta = this.clock.getDelta()
 
-    for (let x = 0; x < cols; x++) {
-      for (let y = 0; y < rows; y++) {
-        const px = (-x + Math.floor(cols / 2)) * cellSize
-        const py = (-y + Math.floor(rows / 2)) * cellSize
-        const u = x / cols
-        const v = y / rows
+    this.renderer.render(this.scene, this.camera)
+    this.controls.update()
+    window.requestAnimationFrame(this.animate.bind(this))
+  }
 
-        // const heightValue = fbm(u, v, {
-        //   seed: this.params.noise.seed,
-        //   scale: this.params.noise.scale,
-        //   persistance: this.params.noise.persistance,
-        //   lacunarity: this.params.noise.lacunarity,
-        //   octaves: this.params.noise.octaves,
-        //   redistribution: this.params.noise.redistribution,
-        // })
+  addLight() {
+    const ambientLight = new AmbientLight(0xFFFFFF, 4)
+    this.scene.add(ambientLight)
 
-        const heightValue = fallOff(x, y, size)
+    const directionalLight = new DirectionalLight(0xFFFFFF, Math.PI)
+    directionalLight.position.set(4, 0, 2)
+    directionalLight.castShadow = true
+    this.scene.add(directionalLight)
+  }
 
-        console.log(heightValue)
-        // const height = heightValue * falloffValue
-        // const color = getElevationColor(falloffValue, 0.4)
-        const color = getGreyColor(heightValue)
+  addHelper() {
+    const helper = new AxesHelper((this.params.size * 2) / 3)
+    this.group.add(helper)
+  }
 
-        dummy.position.set(
-          px,
-          py,
-          0,
-        )
-        dummy.updateMatrix()
-        mesh.setMatrixAt(index, dummy.matrix)
-        mesh.instanceColor.setXYZ(index, color[0], color[1], color[2])
-        index++
-      }
-    }
+  createFbmMaterial() {
+    const size = this.params.size
+    const cellSize = this.params.cellSize
+    const material = new ShaderMaterial({
+      uniforms: {
+        uSize: { value: size },
+        uCellSize: { value: cellSize },
+        uOpacity: { value: this.params.opacity },
+        uSeed: { value: this.params.noise.seed },
+        uScale: { value: this.params.noise.scale },
+        uOctaves: { value: this.params.noise.octaves },
+        uLacunarity: { value: this.params.noise.lacunarity },
+        uPersistance: { value: this.params.noise.persistance },
+        uRedistribution: { value: this.params.noise.redistribution },
+      },
+      vertexShader: fbmVertex,
+      fragmentShader: fbmFragement,
+      transparent: true,
+      side: DoubleSide,
+    })
+    return material
+  }
 
-    this.scene.add(mesh)
+  addGrid() {
+    const size = this.params.size
+    const cellSize = this.params.cellSize
+
+    const geometry = new PlaneGeometry(
+      size,
+      size,
+      size / cellSize,
+      size / cellSize,
+    )
+    const material = this.createFbmMaterial()
+    const mesh = new Mesh(geometry, material)
+
+    this.group.add(mesh)
   }
 
   render() {
-    // this.renderGrid()
-    this.generateElevations()
+    if (this.params.axes) {
+      this.addHelper()
+    }
+    this.addGrid()
   }
 
   rerender(params: Params) {
     this.params = params
-    console.log('rerender', params)
+    this.group.clear()
+    this.camera.position.set(0, 0, this.params.size)
     this.render()
   }
 }
 
 const params: Params = {
-  cellSize: 50,
+  size: 1000,
+  cellSize: 10,
+  opacity: 0.5,
+  axes: false,
   noise: {
-    seed: 1989,
-    scale: 1,
+    seed: 1,
+    scale: 0.01,
+    octaves: 6,
     persistance: 0.5,
     lacunarity: 2,
-    octaves: 6,
     redistribution: 1,
   },
 }
 
-const viewer = new Viewer(document.getElementById('viewer') as HTMLDivElement, params)
+const view = new View('canvas.webgl', params)
 
 const pane = new Pane({
-  title: 'ISLAND',
+  title: `Island`,
 })
 
-pane.addBinding(params, 'cellSize', {
+const common = pane.addFolder({
+  title: 'common',
+})
+
+common.addBinding(params, 'cellSize', {
   min: 2,
-  max: 100,
-  step: 10,
-}).on('change', (e) => {
-  if (e.last)
-    viewer.rerender(params)
+  max: 40,
+  step: 2,
 })
-
-const noise = pane.addFolder({
-  title: 'noise',
-}).on('change', (e) => {
-  if (e.last)
-    viewer.rerender(params)
+common.addBinding(params, 'size', {
+  min: 80,
+  max: 1000,
+  step: 20,
 })
-
-noise.addBinding(params.noise, 'seed', {
-  min: 0,
-  max: 4000,
-  step: 1,
-})
-
-noise.addBinding(params.noise, 'scale', {
-  min: 0,
-  max: 10,
-  step: 0.1,
-})
-
-noise.addBinding(params.noise, 'persistance', {
+common.addBinding(params, 'opacity', {
   min: 0,
   max: 1,
   step: 0.01,
 })
+common.addBinding(params, 'axes')
 
-noise.addBinding(params.noise, 'lacunarity', {
-  min: 1,
-  max: 5,
-  step: 0.01,
+const noise = pane.addFolder({
+  title: 'noise',
 })
 
-noise.addBinding(params.noise, 'octaves', {
+noise.addBinding(params.noise, 'seed', {
   min: 0,
-  max: 10,
+  max: 100,
   step: 1,
+})
+noise.addBinding(params.noise, 'scale', {
+  min: 0,
+  max: 0.1,
+  step: 0.001,
+})
+noise.addBinding(params.noise, 'octaves', {
+  min: 1,
+  max: 12,
+  step: 1,
+})
+noise.addBinding(params.noise, 'persistance', {
+  min: 0.1,
+  max: 2,
+  step: 0.1,
+})
+noise.addBinding(params.noise, 'lacunarity', {
+  min: 0.1,
+  max: 8,
+  step: 0.1,
+})
+noise.addBinding(params.noise, 'redistribution', {
+  min: 1,
+  max: 8,
+  step: 1,
+})
+
+pane.on('change', (e) => {
+  if (e.last) {
+    view.rerender(params)
+  }
 })

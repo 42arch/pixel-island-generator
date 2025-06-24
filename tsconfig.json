@@ -8,6 +8,9 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
+    "types": [
+      "vite-plugin-glsl/ext"
+    ],
     "allowImportingTsExtensions": true,
 
     /* Linting */
