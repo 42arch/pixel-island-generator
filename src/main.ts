@@ -1,8 +1,8 @@
-/* eslint-disable ts/no-unsafe-assignment */
 import {
   AmbientLight,
   AxesHelper,
   Clock,
+  Color,
   DirectionalLight,
   DoubleSide,
   Group,
@@ -23,6 +23,13 @@ interface Params {
   cellSize: number
   opacity: number
   axes: boolean
+  seaLevel: number
+  biomes: {
+    [key: string]: {
+      value: number
+      color: string
+    }
+  }
   noise: {
     seed: number
     scale: number
@@ -121,6 +128,18 @@ class View {
   createFbmMaterial() {
     const size = this.params.size
     const cellSize = this.params.cellSize
+    const seaLevel = this.params.seaLevel
+    const biomes = this.params.biomes
+    const waterValue = biomes.water.value + seaLevel
+    const biomeValues = Object.keys(biomes).map((key) => {
+      return key === 'water' ? biomes[key].value : waterValue + biomes[key].value
+    })
+    const biomeColors = Object.keys(biomes).map((key) => {
+      return new Color(biomes[key].color)
+    })
+
+    console.log(biomeColors, biomeValues)
+
     const material = new ShaderMaterial({
       uniforms: {
         uSize: { value: size },
@@ -132,6 +151,14 @@ class View {
         uLacunarity: { value: this.params.noise.lacunarity },
         uPersistance: { value: this.params.noise.persistance },
         uRedistribution: { value: this.params.noise.redistribution },
+        uSeaLevel: { value: seaLevel },
+        uBiomeValues: {
+          value: biomeValues,
+        },
+        uBiomeColors: {
+          value: biomeColors,
+        },
+
       },
       vertexShader: fbmVertex,
       fragmentShader: fbmFragement,
@@ -166,6 +193,7 @@ class View {
 
   rerender(params: Params) {
     this.params = params
+    console.log(params)
     this.group.clear()
     this.camera.position.set(0, 0, this.params.size)
     this.render()
@@ -177,6 +205,37 @@ const params: Params = {
   cellSize: 10,
   opacity: 0.5,
   axes: false,
+  seaLevel: 0.3,
+  biomes: {
+    snow: {
+      value: 0.6,
+      color: '#9aa7ad',
+    },
+    stone: {
+      value: 0.36,
+      color: '#656565',
+    },
+    forest: {
+      value: 0.29,
+      color: '#586647',
+    },
+    shrub: {
+      value: 0.1,
+      color: '#9ea667',
+    },
+    beach: {
+      value: 0.04,
+      color: '#efb28f',
+    },
+    shore: {
+      value: 0.01,
+      color: '#ffd68f',
+    },
+    water: {
+      value: 0.12,
+      color: '#00a9ff',
+    },
+  },
   noise: {
     seed: 1,
     scale: 0.01,
@@ -213,6 +272,28 @@ common.addBinding(params, 'opacity', {
   step: 0.01,
 })
 common.addBinding(params, 'axes')
+common.addBinding(params, 'seaLevel', {
+  min: 0,
+  max: 1,
+  step: 0.01,
+})
+
+const biomes = pane.addFolder({
+  title: 'biomes',
+})
+const biomeObj: Record<string, string> = {}
+
+Object.keys(params.biomes).forEach((biome) => {
+  biomeObj[biome] = params.biomes[biome].color
+
+  biomes.addBinding(biomeObj, biome, {
+    view: 'color',
+  }).on('change', (e) => {
+    if (e.last) {
+      params.biomes[biome].color = e.value
+    }
+  })
+})
 
 const noise = pane.addFolder({
   title: 'noise',
