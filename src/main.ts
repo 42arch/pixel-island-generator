@@ -18,6 +18,8 @@ import { Pane } from 'tweakpane'
 import fbmFragement from './shaders/fbm/main.frag'
 import fbmVertex from './shaders/fbm/main.vert'
 
+type Biome = 'snow' | 'stone' | 'forest' | 'shrub' | 'beach' | 'shore' | 'water'
+
 interface Params {
   size: number
   cellSize: number
@@ -25,7 +27,7 @@ interface Params {
   axes: boolean
   seaLevel: number
   biomes: {
-    [key: string]: {
+    [key in Biome]: {
       value: number
       color: string
     }
@@ -130,16 +132,32 @@ class View {
     const cellSize = this.params.cellSize
     const seaLevel = this.params.seaLevel
     const biomes = this.params.biomes
-    const waterValue = biomes.water.value + seaLevel
-    const biomeValues = Object.keys(biomes).map((key) => {
-      return key === 'water' ? biomes[key].value : waterValue + biomes[key].value
-    })
-    const biomeColors = Object.keys(biomes).map((key) => {
-      return new Color(biomes[key].color)
-    })
+    const waterValue = seaLevel
+    // const biomeValues = Object.keys(biomes).map((key) => {
+    //   return key === 'water' ? waterValue : waterValue + biomes[key as Biome].value
+    // })
+    // const biomeColors = Object.keys(biomes).map((key) => {
+    //   return new Color(biomes[key as Biome].color)
+    // })
 
-    console.log(biomeColors, biomeValues)
+    const uWaterValue = waterValue
+    const uWaterColor = new Color(biomes.water.color)
+    const uShoreValue = waterValue + biomes.shore.value
+    const uShoreColor = new Color(biomes.shore.color)
+    const uBeachValue = waterValue + biomes.beach.value
+    const uBeachColor = new Color(biomes.beach.color)
+    const uShrubValue = waterValue + biomes.shrub.value
+    const uShrubColor = new Color(biomes.shrub.color)
+    const uForestValue = waterValue + biomes.forest.value
+    const uForestColor = new Color(biomes.forest.color)
+    const uStoneValue = waterValue + biomes.stone.value
+    const uStoneColor = new Color(biomes.stone.color)
+    const uSnowValue = waterValue + biomes.snow.value
+    const uSnowColor = new Color(biomes.snow.color)
 
+    console.log(uWaterValue, uShoreValue, uBeachValue, uShrubValue, uForestValue, uStoneValue, uSnowValue)
+    console.log(uWaterColor.getHexString(), uShoreColor.getHexString(), uBeachColor.getHexString(), uShrubColor.getHexString(), uForestColor.getHexString(), uStoneColor.getHexString(), uSnowColor.getHexString())
+    console.log(uWaterColor)
     const material = new ShaderMaterial({
       uniforms: {
         uSize: { value: size },
@@ -152,12 +170,26 @@ class View {
         uPersistance: { value: this.params.noise.persistance },
         uRedistribution: { value: this.params.noise.redistribution },
         uSeaLevel: { value: seaLevel },
-        uBiomeValues: {
-          value: biomeValues,
-        },
-        uBiomeColors: {
-          value: biomeColors,
-        },
+        uWaterValue: { value: uWaterValue },
+        uWaterColor: { value: uWaterColor },
+        uShoreValue: { value: uShoreValue },
+        uShoreColor: { value: uShoreColor },
+        uBeachValue: { value: uBeachValue },
+        uBeachColor: { value: uBeachColor },
+        uShrubValue: { value: uShrubValue },
+        uShrubColor: { value: uShrubColor },
+        uForestValue: { value: uForestValue },
+        uForestColor: { value: uForestColor },
+        uStoneValue: { value: uStoneValue },
+        uStoneColor: { value: uStoneColor },
+        uSnowValue: { value: uSnowValue },
+        uSnowColor: { value: uSnowColor },
+        // uBiomeValues: {
+        //   value: biomeValues,
+        // },
+        // uBiomeColors: {
+        //   value: biomeColors,
+        // },
 
       },
       vertexShader: fbmVertex,
@@ -205,7 +237,7 @@ const params: Params = {
   cellSize: 10,
   opacity: 0.5,
   axes: false,
-  seaLevel: 0.3,
+  seaLevel: 0.42,
   biomes: {
     snow: {
       value: 0.6,
@@ -232,7 +264,7 @@ const params: Params = {
       color: '#ffd68f',
     },
     water: {
-      value: 0.12,
+      value: 0.42,
       color: '#00a9ff',
     },
   },
@@ -284,13 +316,13 @@ const biomes = pane.addFolder({
 const biomeObj: Record<string, string> = {}
 
 Object.keys(params.biomes).forEach((biome) => {
-  biomeObj[biome] = params.biomes[biome].color
+  biomeObj[biome] = params.biomes[biome as Biome].color
 
   biomes.addBinding(biomeObj, biome, {
     view: 'color',
   }).on('change', (e) => {
     if (e.last) {
-      params.biomes[biome].color = e.value
+      params.biomes[biome as Biome].color = e.value
     }
   })
 })
