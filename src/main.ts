@@ -14,33 +14,10 @@ import {
   WebGLRenderer,
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/Addons.js'
-import { Pane } from 'tweakpane'
+import pane from './gui'
+import { type Biome, params, type Params } from './params'
 import fbmFragement from './shaders/fbm/main.frag'
 import fbmVertex from './shaders/fbm/main.vert'
-
-type Biome = 'snow' | 'stone' | 'forest' | 'shrub' | 'beach' | 'shore' | 'water'
-
-interface Params {
-  size: number
-  cellSize: number
-  opacity: number
-  axes: boolean
-  seaLevel: number
-  biomes: {
-    [key in Biome]: {
-      value: number
-      color: string
-    }
-  }
-  noise: {
-    seed: number
-    scale: number
-    octaves: number
-    lacunarity: number
-    persistance: number
-    redistribution: number
-  }
-}
 
 class View {
   private width: number
@@ -196,6 +173,7 @@ class View {
       fragmentShader: fbmFragement,
       transparent: true,
       side: DoubleSide,
+      // wireframe: true,
     })
     return material
   }
@@ -224,143 +202,19 @@ class View {
   }
 
   rerender(params: Params) {
-    this.params = params
     console.log(params)
     this.group.clear()
-    this.camera.position.set(0, 0, this.params.size)
+    // this.camera.position.set(0, 0, this.params.size)
+    if (params.size !== this.params.size) {
+      this.camera.position.setZ(this.params.size)
+    }
+    this.params = params
+
     this.render()
   }
 }
 
-const params: Params = {
-  size: 1000,
-  cellSize: 10,
-  opacity: 0.5,
-  axes: false,
-  seaLevel: 0.42,
-  biomes: {
-    snow: {
-      value: 0.6,
-      color: '#9aa7ad',
-    },
-    stone: {
-      value: 0.36,
-      color: '#656565',
-    },
-    forest: {
-      value: 0.29,
-      color: '#586647',
-    },
-    shrub: {
-      value: 0.1,
-      color: '#9ea667',
-    },
-    beach: {
-      value: 0.04,
-      color: '#efb28f',
-    },
-    shore: {
-      value: 0.01,
-      color: '#ffd68f',
-    },
-    water: {
-      value: 0.42,
-      color: '#00a9ff',
-    },
-  },
-  noise: {
-    seed: 1,
-    scale: 0.01,
-    octaves: 6,
-    persistance: 0.5,
-    lacunarity: 2,
-    redistribution: 1,
-  },
-}
-
 const view = new View('canvas.webgl', params)
-
-const pane = new Pane({
-  title: `Island`,
-})
-
-const common = pane.addFolder({
-  title: 'common',
-})
-
-common.addBinding(params, 'cellSize', {
-  min: 2,
-  max: 40,
-  step: 2,
-})
-common.addBinding(params, 'size', {
-  min: 80,
-  max: 1000,
-  step: 20,
-})
-common.addBinding(params, 'opacity', {
-  min: 0,
-  max: 1,
-  step: 0.01,
-})
-common.addBinding(params, 'axes')
-common.addBinding(params, 'seaLevel', {
-  min: 0,
-  max: 1,
-  step: 0.01,
-})
-
-const biomes = pane.addFolder({
-  title: 'biomes',
-})
-const biomeObj: Record<string, string> = {}
-
-Object.keys(params.biomes).forEach((biome) => {
-  biomeObj[biome] = params.biomes[biome as Biome].color
-
-  biomes.addBinding(biomeObj, biome, {
-    view: 'color',
-  }).on('change', (e) => {
-    if (e.last) {
-      params.biomes[biome as Biome].color = e.value
-    }
-  })
-})
-
-const noise = pane.addFolder({
-  title: 'noise',
-})
-
-noise.addBinding(params.noise, 'seed', {
-  min: 0,
-  max: 100,
-  step: 1,
-})
-noise.addBinding(params.noise, 'scale', {
-  min: 0,
-  max: 0.1,
-  step: 0.001,
-})
-noise.addBinding(params.noise, 'octaves', {
-  min: 1,
-  max: 12,
-  step: 1,
-})
-noise.addBinding(params.noise, 'persistance', {
-  min: 0.1,
-  max: 2,
-  step: 0.1,
-})
-noise.addBinding(params.noise, 'lacunarity', {
-  min: 0.1,
-  max: 8,
-  step: 0.1,
-})
-noise.addBinding(params.noise, 'redistribution', {
-  min: 1,
-  max: 8,
-  step: 1,
-})
 
 pane.on('change', (e) => {
   if (e.last) {
