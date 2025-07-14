@@ -16,8 +16,8 @@ import {
 import { OrbitControls } from 'three/examples/jsm/Addons.js'
 import pane from './gui'
 import { type Biome, params, type Params } from './params'
-import fbmFragement from './shaders/fbm/main.frag'
-import fbmVertex from './shaders/fbm/main.vert'
+import fbmFragement from './shaders/main.frag'
+import fbmVertex from './shaders/main.vert'
 
 class View {
   private width: number
@@ -107,66 +107,61 @@ class View {
   createFbmMaterial() {
     const size = this.params.size
     const cellSize = this.params.cellSize
-    const seaLevel = this.params.seaLevel
+    const seaLevel = this.params.seaLevel / 2
     const biomes = this.params.biomes
     const waterValue = seaLevel
-    // const biomeValues = Object.keys(biomes).map((key) => {
-    //   return key === 'water' ? waterValue : waterValue + biomes[key as Biome].value
-    // })
-    // const biomeColors = Object.keys(biomes).map((key) => {
-    //   return new Color(biomes[key as Biome].color)
-    // })
 
-    const uWaterValue = waterValue
-    const uWaterColor = new Color(biomes.water.color)
-    const uShoreValue = waterValue + biomes.shore.value
-    const uShoreColor = new Color(biomes.shore.color)
-    const uBeachValue = waterValue + biomes.beach.value
-    const uBeachColor = new Color(biomes.beach.color)
-    const uShrubValue = waterValue + biomes.shrub.value
-    const uShrubColor = new Color(biomes.shrub.color)
-    const uForestValue = waterValue + biomes.forest.value
-    const uForestColor = new Color(biomes.forest.color)
-    const uStoneValue = waterValue + biomes.stone.value
-    const uStoneColor = new Color(biomes.stone.color)
-    const uSnowValue = waterValue + biomes.snow.value
-    const uSnowColor = new Color(biomes.snow.color)
+    const uOceanColor = new Color(biomes.OCEAN)
+    const uBeachColor = new Color(biomes.BEACH)
+    const uTemperateDesertColor = new Color(biomes.TEMPERATE_DESERT)
+    const uShrublandColor = new Color(biomes.SHRUBLAND)
+    const uTaigaColor = new Color(biomes.TAIGA)
+    const uTemperateDeciduousForestColor = new Color(biomes.TEMPERATE_DECIDUOUS_FOREST)
+    const uTemperateRainForestColor = new Color(biomes.TEMPERATE_RAIN_FOREST)
+    const uSubtropicalDesertColor = new Color(biomes.SUBTROPICAL_DESERT)
+    const uGrasslandColor = new Color(biomes.GRASSLAND)
+    const uTropicalSeasonalForestColor = new Color(biomes.TROPICAL_SEASONAL_FOREST)
+    const uTropicalRainForestColor = new Color(biomes.TROPICAL_RAIN_FOREST)
+    const uScorchedColor = new Color(biomes.SCORCHED)
+    const uBareColor = new Color(biomes.BARE)
+    const uTundraColor = new Color(biomes.TUNDRA)
+    const uSnowColor = new Color(biomes.SNOW)
 
-    console.log(uWaterValue, uShoreValue, uBeachValue, uShrubValue, uForestValue, uStoneValue, uSnowValue)
-    console.log(uWaterColor.getHexString(), uShoreColor.getHexString(), uBeachColor.getHexString(), uShrubColor.getHexString(), uForestColor.getHexString(), uStoneColor.getHexString(), uSnowColor.getHexString())
-    console.log(uWaterColor)
     const material = new ShaderMaterial({
       uniforms: {
         uSize: { value: size },
         uCellSize: { value: cellSize },
         uOpacity: { value: this.params.opacity },
-        uSeed: { value: this.params.noise.seed },
-        uScale: { value: this.params.noise.scale },
-        uOctaves: { value: this.params.noise.octaves },
-        uLacunarity: { value: this.params.noise.lacunarity },
-        uPersistance: { value: this.params.noise.persistance },
-        uRedistribution: { value: this.params.noise.redistribution },
+        uIsIsland: { value: this.params.isIsland },
+        uIslandPoint: { value: this.params.island.point },
+        uElevationSeed: { value: this.params.elevation.seed },
+        uElevationScale: { value: this.params.elevation.scale },
+        uElevationOctaves: { value: this.params.elevation.octaves },
+        uElevationLacunarity: { value: this.params.elevation.lacunarity },
+        uElevationPersistance: { value: this.params.elevation.persistance },
+        uElevationRedistribution: { value: this.params.elevation.redistribution },
+        uMoistureSeed: { value: this.params.moisture.seed },
+        uMoistureScale: { value: this.params.moisture.scale },
+        uMoistureOctaves: { value: this.params.moisture.octaves },
+        uMoistureLacunarity: { value: this.params.moisture.lacunarity },
+        uMoisturePersistance: { value: this.params.moisture.persistance },
+        uMoistureRedistribution: { value: this.params.moisture.redistribution },
         uSeaLevel: { value: seaLevel },
-        uWaterValue: { value: uWaterValue },
-        uWaterColor: { value: uWaterColor },
-        uShoreValue: { value: uShoreValue },
-        uShoreColor: { value: uShoreColor },
-        uBeachValue: { value: uBeachValue },
+        uOceanColor: { value: uOceanColor },
         uBeachColor: { value: uBeachColor },
-        uShrubValue: { value: uShrubValue },
-        uShrubColor: { value: uShrubColor },
-        uForestValue: { value: uForestValue },
-        uForestColor: { value: uForestColor },
-        uStoneValue: { value: uStoneValue },
-        uStoneColor: { value: uStoneColor },
-        uSnowValue: { value: uSnowValue },
+        uTemperateDesertColor: { value: uTemperateDesertColor },
+        uShrublandColor: { value: uShrublandColor },
+        uTaigaColor: { value: uTaigaColor },
+        uTemperateDeciduousForestColor: { value: uTemperateDeciduousForestColor },
+        uTemperateRainForestColor: { value: uTemperateRainForestColor },
+        uSubtropicalDesertColor: { value: uSubtropicalDesertColor },
+        uGrasslandColor: { value: uGrasslandColor },
+        uTropicalSeasonalForestColor: { value: uTropicalSeasonalForestColor },
+        uTropicalRainForestColor: { value: uTropicalRainForestColor },
+        uScorchedColor: { value: uScorchedColor },
+        uBareColor: { value: uBareColor },
+        uTundraColor: { value: uTundraColor },
         uSnowColor: { value: uSnowColor },
-        // uBiomeValues: {
-        //   value: biomeValues,
-        // },
-        // uBiomeColors: {
-        //   value: biomeColors,
-        // },
 
       },
       vertexShader: fbmVertex,
