@@ -54,6 +54,7 @@ class View {
 
     this.renderer.setSize(this.width, this.height)
     this.renderer.setPixelRatio(this.pixelRatio)
+    this.renderer.setClearColor(0xFFFFFF, 1)
 
     this.controls = new OrbitControls(this.camera, this.canvas)
     this.controls.enableDamping = true
@@ -127,49 +128,66 @@ class View {
     const uTundraColor = new Color(biomes.TUNDRA)
     const uSnowColor = new Color(biomes.SNOW)
 
-    const material = new ShaderMaterial({
-      uniforms: {
-        uSize: { value: size },
-        uCellSize: { value: cellSize },
-        uOpacity: { value: this.params.opacity },
-        uIsIsland: { value: this.params.isIsland },
-        uIslandPoint: { value: this.params.island.point },
-        uElevationSeed: { value: this.params.elevation.seed },
-        uElevationScale: { value: this.params.elevation.scale },
-        uElevationOctaves: { value: this.params.elevation.octaves },
-        uElevationLacunarity: { value: this.params.elevation.lacunarity },
-        uElevationPersistance: { value: this.params.elevation.persistance },
-        uElevationRedistribution: { value: this.params.elevation.redistribution },
-        uMoistureSeed: { value: this.params.moisture.seed },
-        uMoistureScale: { value: this.params.moisture.scale },
-        uMoistureOctaves: { value: this.params.moisture.octaves },
-        uMoistureLacunarity: { value: this.params.moisture.lacunarity },
-        uMoisturePersistance: { value: this.params.moisture.persistance },
-        uMoistureRedistribution: { value: this.params.moisture.redistribution },
-        uSeaLevel: { value: seaLevel },
-        uOceanColor: { value: uOceanColor },
-        uBeachColor: { value: uBeachColor },
-        uTemperateDesertColor: { value: uTemperateDesertColor },
-        uShrublandColor: { value: uShrublandColor },
-        uTaigaColor: { value: uTaigaColor },
-        uTemperateDeciduousForestColor: { value: uTemperateDeciduousForestColor },
-        uTemperateRainForestColor: { value: uTemperateRainForestColor },
-        uSubtropicalDesertColor: { value: uSubtropicalDesertColor },
-        uGrasslandColor: { value: uGrasslandColor },
-        uTropicalSeasonalForestColor: { value: uTropicalSeasonalForestColor },
-        uTropicalRainForestColor: { value: uTropicalRainForestColor },
-        uScorchedColor: { value: uScorchedColor },
-        uBareColor: { value: uBareColor },
-        uTundraColor: { value: uTundraColor },
-        uSnowColor: { value: uSnowColor },
+    const uniforms = {
+      u_time: { value: 0 },
+      u_height_scale: { value: 30.0 }, // 岛屿高度的缩放因子
+      u_frequency: { value: 0.005 }, // 噪声频率
+      u_octaves: { value: 6 }, // 噪声八度
+      u_persistence: { value: 0.6 }, // 噪声持久性
+      u_moisture_frequency: { value: 0.009 }, // 湿度噪声频率
+      u_moisture_octaves: { value: 3 }, // 湿度噪声八度
+      u_moisture_persistence: { value: 0.5 }, // 湿度噪声持久性
+    }
 
-      },
+    const material = new ShaderMaterial({
+      uniforms,
       vertexShader: fbmVertex,
       fragmentShader: fbmFragement,
-      transparent: true,
-      side: DoubleSide,
-      // wireframe: true,
     })
+
+    // const material = new ShaderMaterial({
+    //   uniforms: {
+    //     uSize: { value: size },
+    //     uCellSize: { value: cellSize },
+    //     uOpacity: { value: this.params.opacity },
+    //     uIsIsland: { value: this.params.isIsland },
+    //     uIslandPoint: { value: this.params.island.point },
+    //     uElevationSeed: { value: this.params.elevation.seed },
+    //     uElevationScale: { value: this.params.elevation.scale },
+    //     uElevationOctaves: { value: this.params.elevation.octaves },
+    //     uElevationLacunarity: { value: this.params.elevation.lacunarity },
+    //     uElevationPersistance: { value: this.params.elevation.persistance },
+    //     uElevationRedistribution: { value: this.params.elevation.redistribution },
+    //     uMoistureSeed: { value: this.params.moisture.seed },
+    //     uMoistureScale: { value: this.params.moisture.scale },
+    //     uMoistureOctaves: { value: this.params.moisture.octaves },
+    //     uMoistureLacunarity: { value: this.params.moisture.lacunarity },
+    //     uMoisturePersistance: { value: this.params.moisture.persistance },
+    //     uMoistureRedistribution: { value: this.params.moisture.redistribution },
+    //     uSeaLevel: { value: seaLevel },
+    //     uOceanColor: { value: uOceanColor },
+    //     uBeachColor: { value: uBeachColor },
+    //     uTemperateDesertColor: { value: uTemperateDesertColor },
+    //     uShrublandColor: { value: uShrublandColor },
+    //     uTaigaColor: { value: uTaigaColor },
+    //     uTemperateDeciduousForestColor: { value: uTemperateDeciduousForestColor },
+    //     uTemperateRainForestColor: { value: uTemperateRainForestColor },
+    //     uSubtropicalDesertColor: { value: uSubtropicalDesertColor },
+    //     uGrasslandColor: { value: uGrasslandColor },
+    //     uTropicalSeasonalForestColor: { value: uTropicalSeasonalForestColor },
+    //     uTropicalRainForestColor: { value: uTropicalRainForestColor },
+    //     uScorchedColor: { value: uScorchedColor },
+    //     uBareColor: { value: uBareColor },
+    //     uTundraColor: { value: uTundraColor },
+    //     uSnowColor: { value: uSnowColor },
+
+    //   },
+    //   vertexShader: fbmVertex,
+    //   fragmentShader: fbmFragement,
+    //   transparent: true,
+    //   side: DoubleSide,
+    //   // wireframe: true,
+    // })
     return material
   }
 

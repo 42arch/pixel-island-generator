@@ -10,9 +10,9 @@ const common = pane.addFolder({
 })
 
 common.addBinding(params, 'cellSize', {
-  min: 2,
+  min: 1,
   max: 40,
-  step: 2,
+  step: 1,
 })
 common.addBinding(params, 'size', {
   min: 80,
@@ -58,7 +58,6 @@ terrain.addBlade({
   value: params.terrain.direction,
 })
 
-
 const island = pane.addFolder({
   title: 'island',
   expanded: false,
@@ -74,24 +73,25 @@ island.addBinding(params.island, 'point', {
     min: -params.size / 2,
     max: params.size / 2,
     revert: true,
-  }
+  },
 })
 
 if (params.isIsland) {
   island.hidden = false
   terrain.hidden = true
-} else {
+}
+else {
   island.hidden = true
   terrain.hidden = false
 }
 
-
-common.addBinding(params, 'isIsland').on('change', e => {
+common.addBinding(params, 'isIsland').on('change', (e) => {
   if (e.last) {
     if (params.isIsland) {
       island.hidden = false
       terrain.hidden = true
-    } else {
+    }
+    else {
       island.hidden = true
       terrain.hidden = false
     }
@@ -104,7 +104,7 @@ pane.addBlade({
 
 const biomes = pane.addFolder({
   title: 'biomes',
-  expanded: false
+  expanded: false,
 })
 const biomeObj: Record<string, string> = {}
 
@@ -123,8 +123,6 @@ Object.keys(params.biomes).forEach((biome) => {
 pane.addBlade({
   view: 'separator',
 })
-
-
 
 const elevation = pane.addFolder({
   title: 'elevation',
@@ -174,27 +172,27 @@ moisture.addBinding(params.moisture, 'seed', {
   max: 100000,
   step: 1,
 })
-moisture.addBinding(params.elevation, 'scale', {
+moisture.addBinding(params.moisture, 'scale', {
   min: 0.1,
   max: 10,
   step: 0.001,
 })
-moisture.addBinding(params.elevation, 'octaves', {
+moisture.addBinding(params.moisture, 'octaves', {
   min: 1,
   max: 12,
   step: 1,
 })
-moisture.addBinding(params.elevation, 'persistance', {
+moisture.addBinding(params.moisture, 'persistance', {
   min: 0.1,
   max: 2,
   step: 0.1,
 })
-moisture.addBinding(params.elevation, 'lacunarity', {
+moisture.addBinding(params.moisture, 'lacunarity', {
   min: 0.1,
   max: 8,
   step: 0.1,
 })
-moisture.addBinding(params.elevation, 'redistribution', {
+moisture.addBinding(params.moisture, 'redistribution', {
   min: 0.1,
   max: 4,
   step: 0.1,
