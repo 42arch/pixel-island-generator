@@ -176,13 +176,12 @@ class View {
 
   addGrid() {
     const size = this.params.size
-    const cellSize = this.params.cellSize
 
     const geometry = new PlaneGeometry(
       size,
       size,
-      size / cellSize,
-      size / cellSize,
+      size,
+      size,
     )
     const material = this.createFbmMaterial()
     const mesh = new Mesh(geometry, material)

@@ -36,7 +36,7 @@ export interface Params {
 
 export const params: Params = {
   size: 1000,
-  cellSize: 1,
+  cellSize: 2,
   opacity: 1,
   axes: false,
   seaLevel: 0.42,
@@ -70,18 +70,18 @@ export const params: Params = {
   },
   elevation: {
     seed: 1685,
-    scale: 1,
+    scale: 1.4,
     octaves: 6,
-    persistance: 0.5,
+    persistance: 0.6,
     lacunarity: 2,
     redistribution: 1,
   },
   moisture: {
     seed: 465,
-    scale: 0.5,
+    scale: 0.2,
     octaves: 3,
     persistance: 0.5,
-    lacunarity: 2,
+    lacunarity: 3,
     redistribution: 1,
   },
 
