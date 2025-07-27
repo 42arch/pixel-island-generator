@@ -1,5 +1,5 @@
-export type Biome = 'OCEAN' | 'BEACH' | 'TEMPERATE_DESERT' | 'SHRUBLAND' | 'TAIGA' | 'TEMPERATE_DECIDUOUS_FOREST' | 'TEMPERATE_RAIN_FOREST' |
-  'SUBTROPICAL_DESERT' | 'GRASSLAND' | 'TROPICAL_SEASONAL_FOREST' | 'TROPICAL_RAIN_FOREST' | 'SCORCHED' | 'BARE' | 'TUNDRA' | 'SNOW'
+export type Biome = 'OCEAN' | 'BEACH' | 'TEMPERATE_DESERT' | 'SHRUBLAND' | 'TAIGA' | 'TEMPERATE_DECIDUOUS_FOREST' | 'TEMPERATE_RAIN_FOREST'
+  | 'SUBTROPICAL_DESERT' | 'GRASSLAND' | 'TROPICAL_SEASONAL_FOREST' | 'TROPICAL_RAIN_FOREST' | 'SCORCHED' | 'BARE' | 'TUNDRA' | 'SNOW'
 
 interface NoiseOptions {
   seed: number
@@ -36,7 +36,7 @@ export interface Params {
 
 export const params: Params = {
   size: 1000,
-  cellSize: 4,
+  cellSize: 2,
   opacity: 1,
   axes: false,
   seaLevel: 0.42,
@@ -52,36 +52,36 @@ export const params: Params = {
     },
   },
   biomes: {
-    OCEAN: '#41467b',
-    BEACH: '#979087',
-    TEMPERATE_DESERT: '#c9d29b',
-    SHRUBLAND: '#889978',
-    TAIGA: '#99ab77',
-    TEMPERATE_DECIDUOUS_FOREST: '#68945a',
-    TEMPERATE_RAIN_FOREST: '#448755',
-    SUBTROPICAL_DESERT: '#d1b988',
-    GRASSLAND: '#88aa56',
-    TROPICAL_SEASONAL_FOREST: '#559a45',
-    TROPICAL_RAIN_FOREST: '#327754',
-    SCORCHED: '#565656',
-    BARE: '#888888',
-    TUNDRA: '#bbbbab',
-    SNOW: '#dddee4',
+    OCEAN: '#2a4b7c',
+    BEACH: '#d9c9a3',
+    TEMPERATE_DESERT: '#dbcfa2',
+    SHRUBLAND: '#a5b68a',
+    TAIGA: '#7b9c65',
+    TEMPERATE_DECIDUOUS_FOREST: '#5e9b4c',
+    TEMPERATE_RAIN_FOREST: '#37754e',
+    SUBTROPICAL_DESERT: '#e1c695',
+    GRASSLAND: '#9ecb60',
+    TROPICAL_SEASONAL_FOREST: '#4a8a3c',
+    TROPICAL_RAIN_FOREST: '#256a3a',
+    SCORCHED: '#3c3c3c',
+    BARE: '#a0a0a0',
+    TUNDRA: '#c5c9b3',
+    SNOW: '#f2f5f8',
   },
   elevation: {
     seed: 1685,
-    scale: 1,
+    scale: 1.4,
     octaves: 6,
-    persistance: 0.5,
+    persistance: 0.6,
     lacunarity: 2,
     redistribution: 1,
   },
   moisture: {
     seed: 465,
-    scale: 1,
-    octaves: 6,
+    scale: 0.2,
+    octaves: 3,
     persistance: 0.5,
-    lacunarity: 2,
+    lacunarity: 3,
     redistribution: 1,
   },
 

@@ -34,8 +34,8 @@ float falloff(vec2 point, vec2 cell, float size) {
 }
 
 vec3 assignColor(float e, float m) {
-  if (e < 0.1) return uOceanColor;
-  if(e < 0.12) return uBeachColor;
+  if(e < 0.1) return uOceanColor;
+  if(e < 0.11) return uBeachColor;
   if(e > 0.8) {
     if(m < 0.1) return uScorchedColor;
     if(m < 0.2) return uBareColor;

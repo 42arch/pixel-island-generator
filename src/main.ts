@@ -54,6 +54,7 @@ class View {
 
     this.renderer.setSize(this.width, this.height)
     this.renderer.setPixelRatio(this.pixelRatio)
+    this.renderer.setClearColor(0xFFFFFF, 1)
 
     this.controls = new OrbitControls(this.camera, this.canvas)
     this.controls.enableDamping = true
@@ -175,13 +176,12 @@ class View {
 
   addGrid() {
     const size = this.params.size
-    const cellSize = this.params.cellSize
 
     const geometry = new PlaneGeometry(
       size,
       size,
-      size / cellSize,
-      size / cellSize,
+      size,
+      size,
     )
     const material = this.createFbmMaterial()
     const mesh = new Mesh(geometry, material)
