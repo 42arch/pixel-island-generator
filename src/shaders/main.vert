@@ -39,7 +39,7 @@ float elevationFBM(vec2 pos) {
 }
 
 float moistureFBM(vec2 pos) {
-  vec2 moisturePositionScaled = pos / uSize * uMoistureScale; // 添加偏移量
+  vec2 moisturePositionScaled = pos / uSize * uMoistureScale;
   float totalNoiseMoisture = 0.0;
   float amplitudeMoisture = 1.0;
   float frequencyMoisture = 1.0;
@@ -63,26 +63,24 @@ void main() {
   
   vec2 cellCenter = (cell + 0.5) * uCellSize;
 
-  float total_noise = elevationFBM(cellPosition);
+  float totalNoise = elevationFBM(cellPosition);
 
-  float dist_from_center = length(cellPosition);
-  float gradient_factor = 1.0 - pow(dist_from_center / 500.0, 2.0); // Adjust 5.0 for island size
-  // gradient_factor = max(0.0, gradient_factor);
-  // gradient_factor = mix(total_noise, gradient_factor, 0.9);
-
-  gradient_factor = mix(total_noise, gradient_factor, 0.99);
+  float distFromCenter = length(cellPosition);
+  float gradientFactor = 1.0 - pow(distFromCenter / (uSize * 0.5), 2.0);
+  gradientFactor = max(0.0, gradientFactor);
+  // gradientFactor = mix(totalNoise, gradientFactor, 0.91);
 
 
-  float final_height = total_noise * gradient_factor;
+  float finalElevation = uIsIsland ? totalNoise * gradientFactor : totalNoise;
 
-  vElevation = final_height;
+  vElevation = finalElevation;
 
   // moisture
   float totalNoiseMoisture = moistureFBM(cellPosition);
-  // v_moisture = total_noise_moisture * step(0.35, final_height); // only apply moisture if height > 0.35 (e.g., land threshold)
+  // vMoisture = total_noise_moisture * step(0.35, finalElevation); // only apply moisture if height > 0.35 (e.g., land threshold)
   vMoisture = clamp(totalNoiseMoisture, 0.0, 1.0);
+  // vec3 newPosition = vec3(cellPosition, finalElevation > 0.3 ? finalElevation * 100.0 : uIsIsland ? 30.0 : 0.0);
 
-  vec3 new_position = vec3(cellPosition, final_height > 0.3 ? final_height * 100.0 : 30.0);
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }

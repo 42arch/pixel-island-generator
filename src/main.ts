@@ -15,7 +15,7 @@ import {
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/Addons.js'
 import pane from './gui'
-import { type Biome, params, type Params } from './params'
+import { params, type Params } from './params'
 import fbmFragement from './shaders/main.frag'
 import fbmVertex from './shaders/main.vert'
 
@@ -50,6 +50,7 @@ class View {
     this.renderer = new WebGLRenderer({
       canvas: this.canvas,
       antialias: true,
+      preserveDrawingBuffer: true,
     })
 
     this.renderer.setSize(this.width, this.height)
@@ -64,7 +65,7 @@ class View {
     this.scene.add(this.group)
 
     this.resize()
-    this.addLight()
+    // this.addLight()
     this.render()
     this.animate()
   }
@@ -83,7 +84,7 @@ class View {
   }
 
   animate() {
-    const delta = this.clock.getDelta()
+    // const delta = this.clock.getDelta()
 
     this.renderer.render(this.scene, this.camera)
     this.controls.update()
@@ -109,24 +110,44 @@ class View {
     const size = this.params.size
     const cellSize = this.params.cellSize
     const seaLevel = this.params.seaLevel / 2
+    const elevation = this.params.elevation
+    const moisture = this.params.moisture
     const biomes = this.params.biomes
-    const waterValue = seaLevel
+    const {
+      OCEAN,
+      SHALLOW_OCEAN,
+      BEACH,
+      TEMPERATE_DESERT,
+      SHRUBLAND,
+      TAIGA,
+      TEMPERATE_DECIDUOUS_FOREST,
+      TEMPERATE_RAIN_FOREST,
+      SUBTROPICAL_DESERT,
+      GRASSLAND,
+      TROPICAL_SEASONAL_FOREST,
+      TROPICAL_RAIN_FOREST,
+      SCORCHED,
+      BARE,
+      TUNDRA,
+      SNOW,
+    } = biomes
 
-    const uOceanColor = new Color(biomes.OCEAN)
-    const uBeachColor = new Color(biomes.BEACH)
-    const uTemperateDesertColor = new Color(biomes.TEMPERATE_DESERT)
-    const uShrublandColor = new Color(biomes.SHRUBLAND)
-    const uTaigaColor = new Color(biomes.TAIGA)
-    const uTemperateDeciduousForestColor = new Color(biomes.TEMPERATE_DECIDUOUS_FOREST)
-    const uTemperateRainForestColor = new Color(biomes.TEMPERATE_RAIN_FOREST)
-    const uSubtropicalDesertColor = new Color(biomes.SUBTROPICAL_DESERT)
-    const uGrasslandColor = new Color(biomes.GRASSLAND)
-    const uTropicalSeasonalForestColor = new Color(biomes.TROPICAL_SEASONAL_FOREST)
-    const uTropicalRainForestColor = new Color(biomes.TROPICAL_RAIN_FOREST)
-    const uScorchedColor = new Color(biomes.SCORCHED)
-    const uBareColor = new Color(biomes.BARE)
-    const uTundraColor = new Color(biomes.TUNDRA)
-    const uSnowColor = new Color(biomes.SNOW)
+    const uOceanColor = new Color(OCEAN)
+    const uShallowOceanColor = new Color(SHALLOW_OCEAN)
+    const uBeachColor = new Color(BEACH)
+    const uTemperateDesertColor = new Color(TEMPERATE_DESERT)
+    const uShrublandColor = new Color(SHRUBLAND)
+    const uTaigaColor = new Color(TAIGA)
+    const uTemperateDeciduousForestColor = new Color(TEMPERATE_DECIDUOUS_FOREST)
+    const uTemperateRainForestColor = new Color(TEMPERATE_RAIN_FOREST)
+    const uSubtropicalDesertColor = new Color(SUBTROPICAL_DESERT)
+    const uGrasslandColor = new Color(GRASSLAND)
+    const uTropicalSeasonalForestColor = new Color(TROPICAL_SEASONAL_FOREST)
+    const uTropicalRainForestColor = new Color(TROPICAL_RAIN_FOREST)
+    const uScorchedColor = new Color(SCORCHED)
+    const uBareColor = new Color(BARE)
+    const uTundraColor = new Color(TUNDRA)
+    const uSnowColor = new Color(SNOW)
 
     const material = new ShaderMaterial({
       uniforms: {
@@ -135,20 +156,21 @@ class View {
         uOpacity: { value: this.params.opacity },
         uIsIsland: { value: this.params.isIsland },
         uIslandPoint: { value: this.params.island.point },
-        uElevationSeed: { value: this.params.elevation.seed },
-        uElevationScale: { value: this.params.elevation.scale },
-        uElevationOctaves: { value: this.params.elevation.octaves },
-        uElevationLacunarity: { value: this.params.elevation.lacunarity },
-        uElevationPersistance: { value: this.params.elevation.persistance },
-        uElevationRedistribution: { value: this.params.elevation.redistribution },
-        uMoistureSeed: { value: this.params.moisture.seed },
-        uMoistureScale: { value: this.params.moisture.scale },
-        uMoistureOctaves: { value: this.params.moisture.octaves },
-        uMoistureLacunarity: { value: this.params.moisture.lacunarity },
-        uMoisturePersistance: { value: this.params.moisture.persistance },
-        uMoistureRedistribution: { value: this.params.moisture.redistribution },
+        uElevationSeed: { value: elevation.seed },
+        uElevationScale: { value: elevation.scale },
+        uElevationOctaves: { value: elevation.octaves },
+        uElevationLacunarity: { value: elevation.lacunarity },
+        uElevationPersistance: { value: elevation.persistance },
+        uElevationRedistribution: { value: elevation.redistribution },
+        uMoistureSeed: { value: moisture.seed },
+        uMoistureScale: { value: moisture.scale },
+        uMoistureOctaves: { value: moisture.octaves },
+        uMoistureLacunarity: { value: moisture.lacunarity },
+        uMoisturePersistance: { value: moisture.persistance },
+        uMoistureRedistribution: { value: moisture.redistribution },
         uSeaLevel: { value: seaLevel },
         uOceanColor: { value: uOceanColor },
+        uShallowOceanColor: { value: uShallowOceanColor },
         uBeachColor: { value: uBeachColor },
         uTemperateDesertColor: { value: uTemperateDesertColor },
         uShrublandColor: { value: uShrublandColor },
@@ -163,13 +185,11 @@ class View {
         uBareColor: { value: uBareColor },
         uTundraColor: { value: uTundraColor },
         uSnowColor: { value: uSnowColor },
-
       },
       vertexShader: fbmVertex,
       fragmentShader: fbmFragement,
       transparent: true,
       side: DoubleSide,
-      // wireframe: true,
     })
     return material
   }
@@ -197,15 +217,22 @@ class View {
   }
 
   rerender(params: Params) {
-    console.log(params)
     this.group.clear()
-    // this.camera.position.set(0, 0, this.params.size)
     if (params.size !== this.params.size) {
       this.camera.position.setZ(this.params.size)
     }
     this.params = params
 
     this.render()
+  }
+
+  export() {
+    const canvas = this.renderer.domElement
+    const dataURL = canvas.toDataURL('image/png')
+    const link = document.createElement('a')
+    link.href = dataURL
+    link.download = 'island.png'
+    link.click()
   }
 }
 
@@ -215,4 +242,8 @@ pane.on('change', (e) => {
   if (e.last) {
     view.rerender(params)
   }
+})
+
+pane.addButton({ title: 'export' }).on('click', () => {
+  view.export()
 })

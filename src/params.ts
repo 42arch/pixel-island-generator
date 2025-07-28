@@ -1,4 +1,4 @@
-export type Biome = 'OCEAN' | 'BEACH' | 'TEMPERATE_DESERT' | 'SHRUBLAND' | 'TAIGA' | 'TEMPERATE_DECIDUOUS_FOREST' | 'TEMPERATE_RAIN_FOREST'
+export type Biome = 'OCEAN' | 'SHALLOW_OCEAN' | 'BEACH' | 'TEMPERATE_DESERT' | 'SHRUBLAND' | 'TAIGA' | 'TEMPERATE_DECIDUOUS_FOREST' | 'TEMPERATE_RAIN_FOREST'
   | 'SUBTROPICAL_DESERT' | 'GRASSLAND' | 'TROPICAL_SEASONAL_FOREST' | 'TROPICAL_RAIN_FOREST' | 'SCORCHED' | 'BARE' | 'TUNDRA' | 'SNOW'
 
 interface NoiseOptions {
@@ -40,7 +40,7 @@ export const params: Params = {
   opacity: 1,
   axes: false,
   seaLevel: 0.42,
-  isIsland: false,
+  isIsland: true,
   terrain: {
     speed: 1,
     direction: 'none',
@@ -53,6 +53,7 @@ export const params: Params = {
   },
   biomes: {
     OCEAN: '#2a4b7c',
+    SHALLOW_OCEAN: '#529ce6',
     BEACH: '#d9c9a3',
     TEMPERATE_DESERT: '#dbcfa2',
     SHRUBLAND: '#a5b68a',
@@ -70,7 +71,7 @@ export const params: Params = {
   },
   elevation: {
     seed: 1685,
-    scale: 1.4,
+    scale: 3.0,
     octaves: 6,
     persistance: 0.6,
     lacunarity: 2,
@@ -78,7 +79,7 @@ export const params: Params = {
   },
   moisture: {
     seed: 465,
-    scale: 0.2,
+    scale: 1.2,
     octaves: 3,
     persistance: 0.5,
     lacunarity: 3,
