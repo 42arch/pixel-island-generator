@@ -7,13 +7,13 @@ const general = pane.addFolder({ title: 'general' })
 
 general.addBinding(params, 'cellSize', {
   min: 1,
-  max: 40,
+  max: 12,
   step: 1,
 })
 general.addBinding(params, 'size', {
-  min: 80,
+  min: 100,
   max: 1000,
-  step: 20,
+  step: 10,
 })
 general.addBinding(params, 'opacity', {
   min: 0,
@@ -187,9 +187,13 @@ moisture.addBinding(params.moisture, 'lacunarity', {
 // })
 
 pane.addButton({ title: 'generate' }).on('click', () => {
-  params.elevation.seed = Math.random() * 100000
-  params.moisture.seed = Math.random() * 100000
+  params.elevation.seed = getRandomNumber(1, 100000)
+  params.moisture.seed = getRandomNumber(1, 100000)
   pane.refresh()
 })
 
 export default pane
+
+function getRandomNumber(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}

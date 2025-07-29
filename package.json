@@ -1,9 +1,9 @@
 {
-  "name": "procedural-island-generator",
+  "name": "pixel-island-generator",
   "type": "module",
   "version": "0.0.1",
   "private": true,
-  "description": "Procedural island generator",
+  "description": "Pixel island generator",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

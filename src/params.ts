@@ -39,7 +39,7 @@ export interface Params {
 
 export const params: Params = {
   size: 1000,
-  cellSize: 2,
+  cellSize: 4,
   opacity: 1,
   axes: false,
   seaLevel: 0.42,

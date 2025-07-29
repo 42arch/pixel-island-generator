@@ -43,7 +43,7 @@ class View {
       0.001,
       10000,
     )
-    this.camera.position.set(0, 0, this.params.size)
+    this.camera.position.set(0, 0, this.params.size * 0.75)
     this.scene.add(this.camera)
     this.renderer = new WebGLRenderer({
       canvas: this.canvas,
@@ -218,7 +218,7 @@ class View {
   rerender(params: Params) {
     this.group.clear()
     if (params.size !== this.params.size) {
-      this.camera.position.setZ(this.params.size)
+      this.camera.position.setZ(this.params.size * 0.75)
     }
     this.params = params
 
