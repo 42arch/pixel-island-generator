@@ -1,3 +1,4 @@
+import mixpanel from 'mixpanel-browser'
 import {
   AmbientLight,
   AxesHelper,
@@ -245,4 +246,11 @@ pane.on('change', (e) => {
 
 pane.addButton({ title: 'export' }).on('click', () => {
   view.export()
+})
+
+mixpanel.init('c3fea8462457eeab84bf04985ab48a42', {
+  debug: true,
+  autocapture: true,
+  track_pageview: true,
+  persistence: 'localStorage',
 })
