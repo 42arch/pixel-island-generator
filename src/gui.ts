@@ -3,24 +3,24 @@ import { type Biome, params } from './params'
 
 const pane = new Pane({ title: `parameters` })
 
-const common = pane.addFolder({ title: 'common' })
+const general = pane.addFolder({ title: 'general' })
 
-common.addBinding(params, 'cellSize', {
+general.addBinding(params, 'cellSize', {
   min: 1,
   max: 40,
   step: 1,
 })
-common.addBinding(params, 'size', {
+general.addBinding(params, 'size', {
   min: 80,
   max: 1000,
   step: 20,
 })
-common.addBinding(params, 'opacity', {
+general.addBinding(params, 'opacity', {
   min: 0,
   max: 1,
   step: 0.01,
 })
-common.addBinding(params, 'axes')
+general.addBinding(params, 'axes')
 // common.addBinding(params, 'seaLevel', {
 //   min: 0.01,
 //   max: 1.0,
@@ -98,6 +98,8 @@ const biomes = pane.addFolder({
   title: 'biomes',
   expanded: false,
 })
+biomes.addBinding(params, 'blendMode')
+
 const biomeObj: Record<string, string> = {}
 
 Object.keys(params.biomes).forEach((biome) => {

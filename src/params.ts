@@ -1,5 +1,7 @@
-export type Biome = 'OCEAN' | 'SHALLOW_OCEAN' | 'BEACH' | 'TEMPERATE_DESERT' | 'SHRUBLAND' | 'TAIGA' | 'TEMPERATE_DECIDUOUS_FOREST' | 'TEMPERATE_RAIN_FOREST'
-  | 'SUBTROPICAL_DESERT' | 'GRASSLAND' | 'TROPICAL_SEASONAL_FOREST' | 'TROPICAL_RAIN_FOREST' | 'SCORCHED' | 'BARE' | 'TUNDRA' | 'SNOW'
+export type Biome = 'OCEAN' | 'SHALLOW_OCEAN' | 'BEACH' | 'TEMPERATE_DESERT' | 'SHRUBLAND' | 'TAIGA'
+  | 'TEMPERATE_DECIDUOUS_FOREST' | 'TEMPERATE_RAIN_FOREST'
+  | 'SUBTROPICAL_DESERT' | 'GRASSLAND' | 'TROPICAL_SEASONAL_FOREST'
+  | 'TROPICAL_RAIN_FOREST' | 'SCORCHED' | 'BARE' | 'TUNDRA' | 'SNOW'
 
 interface NoiseOptions {
   seed: number
@@ -27,6 +29,7 @@ export interface Params {
       y: number
     }
   }
+  blendMode: boolean
   biomes: {
     [key in Biome]: string
   }
@@ -51,6 +54,7 @@ export const params: Params = {
       y: 0,
     },
   },
+  blendMode: false,
   biomes: {
     OCEAN: '#2a4b7c',
     SHALLOW_OCEAN: '#529ce6',

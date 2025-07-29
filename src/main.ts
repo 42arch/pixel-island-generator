@@ -1,7 +1,6 @@
 import {
   AmbientLight,
   AxesHelper,
-  Clock,
   Color,
   DirectionalLight,
   DoubleSide,
@@ -28,7 +27,6 @@ class View {
   private camera: PerspectiveCamera
   private renderer: WebGLRenderer
   private controls: OrbitControls
-  private clock: Clock
   private group: Group
   private params: Params
 
@@ -59,7 +57,6 @@ class View {
 
     this.controls = new OrbitControls(this.camera, this.canvas)
     this.controls.enableDamping = true
-    this.clock = new Clock()
 
     this.group = new Group()
     this.scene.add(this.group)
@@ -112,6 +109,7 @@ class View {
     const seaLevel = this.params.seaLevel / 2
     const elevation = this.params.elevation
     const moisture = this.params.moisture
+    const blendMode = this.params.blendMode
     const biomes = this.params.biomes
     const {
       OCEAN,
@@ -169,6 +167,7 @@ class View {
         uMoisturePersistance: { value: moisture.persistance },
         uMoistureRedistribution: { value: moisture.redistribution },
         uSeaLevel: { value: seaLevel },
+        uBlendMode: { value: blendMode },
         uOceanColor: { value: uOceanColor },
         uShallowOceanColor: { value: uShallowOceanColor },
         uBeachColor: { value: uBeachColor },

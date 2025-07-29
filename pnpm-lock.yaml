@@ -8,21 +8,15 @@ importers:
 
   .:
     dependencies:
-      alea:
-        specifier: ^1.0.1
-        version: 1.0.1
-      ogl:
-        specifier: ^1.0.11
-        version: 1.0.11
-      simplex-noise:
-        specifier: ^4.0.3
-        version: 4.0.3
       three:
         specifier: ^0.177.0
         version: 0.177.0
       tweakpane:
         specifier: ^4.0.5
         version: 4.0.5
+      tweakpane-plugin-infodump:
+        specifier: ^4.0.2
+        version: 4.0.2(tweakpane@4.0.5)
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^4.14.1
@@ -644,9 +638,6 @@ packages:
 
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
-
-  alea@1.0.1:
-    resolution: {integrity: sha512-QU+wv+ziDXaMxRdsQg/aH7sVfWdhKps5YP97IIwFkHCsbDZA3k87JXoZ5/iuemf4ntytzIWeScrRpae8+lDrXA==}
 
   ansi-styles@4.3.0:
     resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==}
@@ -1350,9 +1341,6 @@ packages:
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
 
-  ogl@1.0.11:
-    resolution: {integrity: sha512-kUpC154AFfxi16pmZUK4jk3J+8zxwTWGPo03EoYA8QPbzikHoaC82n6pNTbd+oEaJonaE8aPWBlX7ad9zrqLsA==}
-
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
@@ -1491,11 +1479,11 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
 
-  simplex-noise@4.0.3:
-    resolution: {integrity: sha512-qSE2I4AngLQG7BXqoZj51jokT4WUXe8mOBrvfOXpci8+6Yu44+/dD5zqDpOx3Ux792eamTd2lLcI8jqFntk/lg==}
-
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
+
+  slimdown-js@1.0.0:
+    resolution: {integrity: sha512-5bl05N92l1MQCnXZ7db09g6rZjwJ8d7ue3gWlAw1mYAcm6jrIY/wQeJNqRZvVc1Fr7MQ+3xw4oQmtp5DWUsVrw==}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -1558,6 +1546,11 @@ packages:
     resolution: {integrity: sha512-EDyGAwH1gO0Ausm9gV6T2nUvBgXT5kGoCMJPllOaooZ+4VvJiKBdZE7wK18N1deEowhcUptS+5GXZK8U/fvpwA==}
     peerDependencies:
       typescript: '>=4.0.0'
+
+  tweakpane-plugin-infodump@4.0.2:
+    resolution: {integrity: sha512-zJOFZ1JVMNgsOdY+1+pGDgNYAWY/Zdmr1rRFVwFfVqqmDMYmhDriCnU7zWKP6SI5cTE+7iFjJrg2tAjfiRZiLw==}
+    peerDependencies:
+      tweakpane: ^4.0.0
 
   tweakpane@4.0.5:
     resolution: {integrity: sha512-rxEXdSI+ArlG1RyO6FghC4ZUX8JkEfz8F3v1JuteXSV0pEtHJzyo07fcDG+NsJfN5L39kSbCYbB9cBGHyuI/tQ==}
@@ -2205,8 +2198,6 @@ snapshots:
       fast-json-stable-stringify: 2.1.0
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
-
-  alea@1.0.1: {}
 
   ansi-styles@4.3.0:
     dependencies:
@@ -3129,8 +3120,6 @@ snapshots:
     dependencies:
       boolbase: 1.0.0
 
-  ogl@1.0.11: {}
-
   optionator@0.9.4:
     dependencies:
       deep-is: 0.1.4
@@ -3276,9 +3265,9 @@ snapshots:
 
   shebang-regex@3.0.0: {}
 
-  simplex-noise@4.0.3: {}
-
   sisteransi@1.0.5: {}
+
+  slimdown-js@1.0.0: {}
 
   source-map-js@1.2.1: {}
 
@@ -3332,6 +3321,11 @@ snapshots:
     dependencies:
       picomatch: 4.0.2
       typescript: 5.8.3
+
+  tweakpane-plugin-infodump@4.0.2(tweakpane@4.0.5):
+    dependencies:
+      slimdown-js: 1.0.0
+      tweakpane: 4.0.5
 
   tweakpane@4.0.5: {}
 
