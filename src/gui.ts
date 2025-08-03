@@ -103,9 +103,9 @@ biomes.addBinding(params, 'blendMode')
 const biomeObj: Record<string, string> = {}
 
 Object.keys(params.biomes).forEach((biome) => {
-  biomeObj[biome] = params.biomes[biome as Biome]
+  biomeObj[biome.toLocaleLowerCase()] = params.biomes[biome as Biome]
 
-  biomes.addBinding(biomeObj, biome, { view: 'color' }).on('change', (e) => {
+  biomes.addBinding(biomeObj, biome.toLocaleLowerCase(), { view: 'color' }).on('change', (e) => {
     if (e.last) {
       params.biomes[biome as Biome] = e.value
     }
