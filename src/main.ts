@@ -151,9 +151,11 @@ class View {
     const material = new ShaderMaterial({
       uniforms: {
         uSize: { value: size },
+        uWidth: { value: this.params.width },
+        uHeight: { value: this.params.height },
         uCellSize: { value: cellSize },
         uOpacity: { value: this.params.opacity },
-        uIsIsland: { value: this.params.isIsland },
+        uIslandMode: { value: this.params.islandMode },
         uIslandPoint: { value: this.params.island.point },
         uElevationSeed: { value: elevation.seed },
         uElevationScale: { value: elevation.scale },
@@ -248,9 +250,9 @@ pane.addButton({ title: 'export' }).on('click', () => {
   view.export()
 })
 
-mixpanel.init('c3fea8462457eeab84bf04985ab48a42', {
-  debug: true,
-  autocapture: true,
-  track_pageview: true,
-  persistence: 'localStorage',
-})
+// mixpanel.init('c3fea8462457eeab84bf04985ab48a42', {
+//   debug: true,
+//   autocapture: true,
+//   track_pageview: true,
+//   persistence: 'localStorage',
+// })

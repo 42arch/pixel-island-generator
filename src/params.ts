@@ -14,11 +14,13 @@ interface NoiseOptions {
 
 export interface Params {
   size: number
+  width: number
+  height: number
   cellSize: number
   opacity: number
   axes: boolean
   seaLevel: number
-  isIsland: boolean
+  islandMode: boolean
   terrain: {
     speed: number
     direction: 'none' | 'up' | 'down' | 'left' | 'right'
@@ -39,11 +41,13 @@ export interface Params {
 
 export const params: Params = {
   size: 1000,
+  width: 1000,
+  height: 1400,
   cellSize: 2,
   opacity: 1,
   axes: false,
   seaLevel: 0.42,
-  isIsland: true,
+  islandMode: true,
   terrain: {
     speed: 1,
     direction: 'none',

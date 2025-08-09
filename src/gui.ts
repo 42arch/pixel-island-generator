@@ -6,6 +6,7 @@ const pane = new Pane({ title: `parameters` })
 const general = pane.addFolder({ title: 'general' })
 
 general.addBinding(params, 'cellSize', {
+  label: 'cell size',
   min: 1,
   max: 12,
   step: 1,
@@ -20,10 +21,10 @@ general.addBinding(params, 'opacity', {
   max: 1,
   step: 0.01,
 })
-general.addBinding(params, 'axes')
-// common.addBinding(params, 'seaLevel', {
+
+// const seaLevel = general.addBinding(params, 'seaLevel', {
 //   min: 0.01,
-//   max: 1.0,
+//   max: 0.7,
 //   step: 0.01,
 // })
 
@@ -52,32 +53,34 @@ general.addBinding(params, 'axes')
 //   value: params.terrain.direction,
 // })
 
-// const island = pane.addFolder({
-//   title: 'island',
-//   expanded: false,
-// })
+const island = pane.addFolder({
+  title: 'island',
+  expanded: false,
+})
 
-// island.addBinding(params.island, 'point', {
-//   x: {
-//     min: -params.size / 2,
-//     max: params.size / 2,
-//     revert: true,
-//   },
-//   y: {
-//     min: -params.size / 2,
-//     max: params.size / 2,
-//     revert: true,
-//   },
-// })
+island.addBinding(params.island, 'point', {
+  x: {
+    min: -params.size / 2,
+    max: params.size / 2,
+    revert: true,
+  },
+  y: {
+    min: -params.size / 2,
+    max: params.size / 2,
+    revert: true,
+  },
+})
 
-// if (params.isIsland) {
-//   island.hidden = false
-//   terrain.hidden = true
-// }
-// else {
-//   island.hidden = true
-//   terrain.hidden = false
-// }
+general.addBinding(params, 'islandMode', { label: 'island mode' }).on('change', (e) => {
+  if (e.last) {
+    if (params.islandMode) {
+      island.hidden = false
+    }
+    else {
+      island.hidden = true
+    }
+  }
+})
 
 // common.addBinding(params, 'isIsland').on('change', (e) => {
 //   if (e.last) {

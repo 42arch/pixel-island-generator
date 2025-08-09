@@ -74,61 +74,12 @@ vec3 getBiomeColor(float elevation, float moisture) {
   return uTropicalRainForestColor;
 }
 
-vec3 ocean(float e) {
-  vec3 hsl = rgb2hsl(uOceanColor);
-  hsl.z = mapLinear(e, 0.0, 0.16, 0.2, 0.7);
-  return hsl2rgb(hsl);
-}
-
-vec3 lowland(float m) {
-  if (m < 0.16) return uSubtropicalDesertColor;
-  if (m < 0.33) return mix(uSubtropicalDesertColor, uGrasslandColor, smoothstep(0.16, 0.20, m));
-  if (m < 0.66) return mix(uGrasslandColor, uTropicalSeasonalForestColor, smoothstep(0.33, 0.40, m));
-  return mix(uTropicalSeasonalForestColor, uTropicalRainForestColor, smoothstep(0.66, 0.75, m));
-}
-
-vec3 midland(float m) {
-  if (m < 0.16) return uTemperateDesertColor;
-  if (m < 0.33) return mix(uTemperateDesertColor, uGrasslandColor, smoothstep(0.16, 0.20, m));
-  if (m < 0.66) return mix(uGrasslandColor, uTemperateDeciduousForestColor, smoothstep(0.33, 0.40, m));
-  return mix(uTemperateDeciduousForestColor, uTemperateRainForestColor, smoothstep(0.66, 0.75, m));
-}
-
-vec3 highland(float m) {
-  if (m < 0.33) return uTemperateDesertColor;
-  if (m < 0.66) return mix(uTemperateDesertColor, uShrublandColor, smoothstep(0.33, 0.40, m));
-  return mix(uShrublandColor, uTaigaColor, smoothstep(0.66, 0.75, m));
-}
-
-vec3 peak(float m) {
-  if (m < 0.1) return uScorchedColor;
-  if (m < 0.2) return mix(uScorchedColor, uBareColor, smoothstep(0.1, 0.15, m));
-  if (m < 0.5) return mix(uBareColor, uTundraColor, smoothstep(0.2, 0.3, m));
-  return mix(uTundraColor, uSnowColor, smoothstep(0.5, 0.6, m));
-}
-
-vec3 getBlendedBiomeColor(float elevation, float moisture) {
-  if (elevation < 0.22) {
-    if (elevation < 0.16) {
-      // return ocean(elevation);
-      return mix(uOceanColor, uShallowOceanColor, smoothstep(0.14, 0.16, elevation));
-    } else {
-      return mix(uShallowOceanColor, uBeachColor, smoothstep(0.18, 0.22, elevation));
-    }
-  }
-
-  if (elevation < 0.3) return mix(uBeachColor, lowland(moisture), smoothstep(0.22, 0.25, elevation));
-  if (elevation < 0.6) return mix(lowland(moisture), midland(moisture), smoothstep(0.3, 0.4, elevation));
-  if (elevation < 0.8) return mix(midland(moisture), highland(moisture), smoothstep(0.6, 0.7, elevation));
-  return mix(highland(moisture), peak(moisture), smoothstep(0.8, 0.85, elevation));
-}
-
 
 void main() {
   float heightValue = pow(vElevation, 1.0);
   float moistureValue = vMoisture;
 
-  vec3 color = uBlendMode ? getBlendedBiomeColor(heightValue, moistureValue) : getBiomeColor(heightValue, moistureValue);
+  vec3 color = getBiomeColor(heightValue, moistureValue);
 
   gl_FragColor = vec4(color, uOpacity);
   #include <colorspace_fragment>

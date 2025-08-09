@@ -2,8 +2,10 @@
 #include utils.glsl
 
 uniform float uSize;
+uniform float uWidth;
+uniform float uHeight;
 uniform float uCellSize;
-uniform bool uIsIsland;
+uniform bool uIslandMode;
 uniform vec2 uIslandPoint;
 uniform float uScale;
 uniform float uElevationSeed;
@@ -18,13 +20,11 @@ uniform int uMoistureOctaves;
 uniform float uMoistureLacunarity;
 uniform float uMoisturePersistance;
 uniform float uMoistureRedistribution;
-varying vec2 vUv;
 varying float vElevation;
 varying float vMoisture;
 
 void main() {
-  vUv = uv;
-  vec2 pos = (vUv - 0.5) * uSize;
+  vec2 pos = (uv - 0.5) * uSize;
   vec2 cell = floor(pos / uCellSize);
   
   vec2 cellPos = cell * uCellSize;
@@ -34,12 +34,14 @@ void main() {
 
   // elevation
   float elevation = fbm(cellPosition / uSize, uElevationSeed, uElevationScale, uElevationOctaves, uElevationLacunarity, uElevationPersistance);
-  float distFromCenter = length(cellPosition);
-  float gradientFactor = 1.0 - pow(distFromCenter / (uSize * 0.5), 2.0);
+  // float distFromCenter = length(cellPosition);
+  float distFromCenter = distance(cellPosition, uIslandPoint);
+  float gradientFactor = 1.0 - pow(distFromCenter / (min(uWidth, uHeight) * 0.5), 2.0);
   gradientFactor = max(0.0, gradientFactor);
   // gradientFactor = mix(totalNoise, gradientFactor, 0.91);
 
-  float finalElevation = uIsIsland ? elevation * gradientFactor : elevation;
+  float finalElevation = uIslandMode ? elevation * gradientFactor : elevation;
+
   vElevation = finalElevation;
 
   // moisture
