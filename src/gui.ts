@@ -71,16 +71,16 @@ island.addBinding(params.island, 'point', {
   },
 })
 
-general.addBinding(params, 'islandMode', { label: 'island mode' }).on('change', (e) => {
-  if (e.last) {
-    if (params.islandMode) {
-      island.hidden = false
-    }
-    else {
-      island.hidden = true
-    }
-  }
-})
+// general.addBinding(params, 'islandMode', { label: 'island mode' }).on('change', (e) => {
+//   if (e.last) {
+//     if (params.islandMode) {
+//       island.hidden = false
+//     }
+//     else {
+//       island.hidden = true
+//     }
+//   }
+// })
 
 // common.addBinding(params, 'isIsland').on('change', (e) => {
 //   if (e.last) {

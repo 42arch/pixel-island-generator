@@ -41,16 +41,6 @@ void main() {
   // gradientFactor = mix(totalNoise, gradientFactor, 0.91);
 
   float finalElevation = uIslandMode ? elevation * gradientFactor : elevation;
-  float p = 10.0;
-  // float dist = pow(pow(abs(uv.x - 0.5), p) + pow(abs(uv.y - 0.5), p), 1.0 / p);
-  float dist = max(abs(uv.x - 0.5), abs(uv.y - 0.5));
-  // float dist = length(uv - 0.5);
-  // float dist = abs(uv.x - 0.5) + abs(uv.y - 0.5);
-  float gradient = smoothstep(0.0, sqrt(0.5), dist);
-  // float gradient = clamp(dist, 0.0, 1.0);
-  finalElevation = elevation * pow(1.0 - gradient, 2.0);
-
-  // finalElevation = gradient;
 
   vElevation = finalElevation;
 
