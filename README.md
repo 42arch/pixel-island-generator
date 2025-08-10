@@ -1,12 +1,12 @@
 <div align="center">
-  <h1>Pixel Island Generator</h1>
-  <p>A pixel-style random island (or terrain) generator. 🏝️</p>
+  <h1>Procedural Island Generator</h1>
+  <p>A multi-style random island (or terrain) generator. 🏝️</p>
 </div>
 
 ## Intro
 
 Using Perlin noise and FBM to generate elevation and moisture, and assigning biomes accordingly.
-Also, you can generate different types of islands by adjusting the parameters.
+Also, you can generate different styles of islands by adjusting the parameters.
 
 Powered by WebGL, It's fast!
 
@@ -14,7 +14,7 @@ Powered by WebGL, It's fast!
 
 ## Preview
 
- [pixel-island-generator.netlify.app](https://pixel-island-generator.netlify.app)
+ [procedural-island-generator.netlify.app](https://procedural-island-generator.netlify.app)
 
 ## Tech Stack
 

@@ -3,7 +3,9 @@
 
 uniform float uSize;
 uniform float uCellSize;
-uniform bool uIsIsland;
+uniform bool uPixelate;
+uniform int uShape;
+uniform float uSizeExponent;
 uniform vec2 uIslandPoint;
 uniform float uScale;
 uniform float uElevationSeed;
@@ -18,35 +20,44 @@ uniform int uMoistureOctaves;
 uniform float uMoistureLacunarity;
 uniform float uMoisturePersistance;
 uniform float uMoistureRedistribution;
-varying vec2 vUv;
 varying float vElevation;
 varying float vMoisture;
 
 void main() {
-  vUv = uv;
-  vec2 pos = (vUv - 0.5) * uSize;
+  vec2 pos = (uv - 0.5) * uSize;
   vec2 cell = floor(pos / uCellSize);
   
   vec2 cellPos = cell * uCellSize;
-  vec2 cellPosition = cellPos;
-  
+  vec2 cellPosition = uPixelate ? cellPos : pos;
   // vec2 cellCenter = (cell + 0.5) * uCellSize;
 
   // elevation
   float elevation = fbm(cellPosition / uSize, uElevationSeed, uElevationScale, uElevationOctaves, uElevationLacunarity, uElevationPersistance);
-  float distFromCenter = length(cellPosition);
-  float gradientFactor = 1.0 - pow(distFromCenter / (uSize * 0.5), 2.0);
-  gradientFactor = max(0.0, gradientFactor);
-  // gradientFactor = mix(totalNoise, gradientFactor, 0.91);
 
-  float finalElevation = uIsIsland ? elevation * gradientFactor : elevation;
+  float dist = 0.0;
+  switch (uShape) {
+    case 1:
+      dist = length(uv - 0.5);
+      break;
+    case 2:
+      dist = max(abs(uv.x - 0.5), abs(uv.y - 0.5));
+      break;
+    case 3:
+      dist = abs(uv.x - 0.5) + abs(uv.y - 0.5);
+      break;
+    default:
+      dist = length(uv - 0.5);
+      break;
+  }
+
+  float gradient = smoothstep(0.0, sqrt(0.5), dist);
+  float finalElevation = elevation * pow(1.0 - gradient, uSizeExponent);
+
   vElevation = finalElevation;
 
   // moisture
   float moisture = fbm(cellPosition / uSize, uMoistureSeed, uMoistureScale, uMoistureOctaves, uMoistureLacunarity, uMoisturePersistance);
   vMoisture = clamp(moisture, 0.0, 1.0);
-  // vec3 newPosition = vec3(cellPosition, finalElevation > 0.3 ? finalElevation * 100.0 : uIsIsland ? 30.0 : 0.0);
-
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }

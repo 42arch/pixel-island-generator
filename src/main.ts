@@ -1,8 +1,5 @@
-import mixpanel from 'mixpanel-browser'
 import {
   AmbientLight,
-  AxesHelper,
-  Color,
   DirectionalLight,
   DoubleSide,
   Group,
@@ -18,6 +15,7 @@ import pane from './gui'
 import { params, type Params } from './params'
 import fbmFragement from './shaders/main.frag'
 import fbmVertex from './shaders/main.vert'
+import { getParamsFromUrl, mergeParams, setParamsInUrl } from './url'
 
 class View {
   private width: number
@@ -99,92 +97,32 @@ class View {
     this.scene.add(directionalLight)
   }
 
-  addHelper() {
-    const helper = new AxesHelper((this.params.size * 2) / 3)
-    this.group.add(helper)
-  }
-
   createFbmMaterial() {
     const size = this.params.size
     const cellSize = this.params.cellSize
-    const seaLevel = this.params.seaLevel / 2
     const elevation = this.params.elevation
     const moisture = this.params.moisture
-    const blendMode = this.params.blendMode
-    const biomes = this.params.biomes
-    const {
-      OCEAN,
-      SHALLOW_OCEAN,
-      BEACH,
-      TEMPERATE_DESERT,
-      SHRUBLAND,
-      TAIGA,
-      TEMPERATE_DECIDUOUS_FOREST,
-      TEMPERATE_RAIN_FOREST,
-      SUBTROPICAL_DESERT,
-      GRASSLAND,
-      TROPICAL_SEASONAL_FOREST,
-      TROPICAL_RAIN_FOREST,
-      SCORCHED,
-      BARE,
-      TUNDRA,
-      SNOW,
-    } = biomes
-
-    const uOceanColor = new Color(OCEAN)
-    const uShallowOceanColor = new Color(SHALLOW_OCEAN)
-    const uBeachColor = new Color(BEACH)
-    const uTemperateDesertColor = new Color(TEMPERATE_DESERT)
-    const uShrublandColor = new Color(SHRUBLAND)
-    const uTaigaColor = new Color(TAIGA)
-    const uTemperateDeciduousForestColor = new Color(TEMPERATE_DECIDUOUS_FOREST)
-    const uTemperateRainForestColor = new Color(TEMPERATE_RAIN_FOREST)
-    const uSubtropicalDesertColor = new Color(SUBTROPICAL_DESERT)
-    const uGrasslandColor = new Color(GRASSLAND)
-    const uTropicalSeasonalForestColor = new Color(TROPICAL_SEASONAL_FOREST)
-    const uTropicalRainForestColor = new Color(TROPICAL_RAIN_FOREST)
-    const uScorchedColor = new Color(SCORCHED)
-    const uBareColor = new Color(BARE)
-    const uTundraColor = new Color(TUNDRA)
-    const uSnowColor = new Color(SNOW)
 
     const material = new ShaderMaterial({
       uniforms: {
         uSize: { value: size },
         uCellSize: { value: cellSize },
+        uPixelate: { value: this.params.pixelate },
         uOpacity: { value: this.params.opacity },
-        uIsIsland: { value: this.params.isIsland },
+        uStyle: {value: this.params.style},
+        uShape: { value: this.params.island.shape },
+        uSizeExponent: { value: this.params.island.size_exponent }, 
         uIslandPoint: { value: this.params.island.point },
         uElevationSeed: { value: elevation.seed },
         uElevationScale: { value: elevation.scale },
         uElevationOctaves: { value: elevation.octaves },
         uElevationLacunarity: { value: elevation.lacunarity },
         uElevationPersistance: { value: elevation.persistance },
-        uElevationRedistribution: { value: elevation.redistribution },
         uMoistureSeed: { value: moisture.seed },
         uMoistureScale: { value: moisture.scale },
         uMoistureOctaves: { value: moisture.octaves },
         uMoistureLacunarity: { value: moisture.lacunarity },
         uMoisturePersistance: { value: moisture.persistance },
-        uMoistureRedistribution: { value: moisture.redistribution },
-        uSeaLevel: { value: seaLevel },
-        uBlendMode: { value: blendMode },
-        uOceanColor: { value: uOceanColor },
-        uShallowOceanColor: { value: uShallowOceanColor },
-        uBeachColor: { value: uBeachColor },
-        uTemperateDesertColor: { value: uTemperateDesertColor },
-        uShrublandColor: { value: uShrublandColor },
-        uTaigaColor: { value: uTaigaColor },
-        uTemperateDeciduousForestColor: { value: uTemperateDeciduousForestColor },
-        uTemperateRainForestColor: { value: uTemperateRainForestColor },
-        uSubtropicalDesertColor: { value: uSubtropicalDesertColor },
-        uGrasslandColor: { value: uGrasslandColor },
-        uTropicalSeasonalForestColor: { value: uTropicalSeasonalForestColor },
-        uTropicalRainForestColor: { value: uTropicalRainForestColor },
-        uScorchedColor: { value: uScorchedColor },
-        uBareColor: { value: uBareColor },
-        uTundraColor: { value: uTundraColor },
-        uSnowColor: { value: uSnowColor },
       },
       vertexShader: fbmVertex,
       fragmentShader: fbmFragement,
@@ -210,9 +148,6 @@ class View {
   }
 
   render() {
-    if (this.params.axes) {
-      this.addHelper()
-    }
     this.addGrid()
   }
 
@@ -236,11 +171,17 @@ class View {
   }
 }
 
+const fromUrl = getParamsFromUrl()
+if (fromUrl) {
+  mergeParams(params, fromUrl)
+}
+
 const view = new View('canvas.webgl', params)
 
 pane.on('change', (e) => {
   if (e.last) {
     view.rerender(params)
+    setParamsInUrl(params)
   }
 })
 
@@ -248,9 +189,9 @@ pane.addButton({ title: 'export' }).on('click', () => {
   view.export()
 })
 
-mixpanel.init('c3fea8462457eeab84bf04985ab48a42', {
-  debug: true,
-  autocapture: true,
-  track_pageview: true,
-  persistence: 'localStorage',
-})
+// mixpanel.init('c3fea8462457eeab84bf04985ab48a42', {
+//   debug: true,
+//   autocapture: true,
+//   track_pageview: true,
+//   persistence: 'localStorage',
+// })
