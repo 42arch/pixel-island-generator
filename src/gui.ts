@@ -1,10 +1,11 @@
 import { Pane } from 'tweakpane'
-import {  getRandomNumber, params } from './params'
+import * as InfodumpPlugin from 'tweakpane-plugin-infodump'
+import { getRandomNumber, params } from './params'
 
-const pane = new Pane({ title: `parameters` })
+const pane = new Pane({ title: `Parameters` })
+pane.registerPlugin(InfodumpPlugin)
 
-const general = pane.addFolder({ title: 'general' })
-
+const general = pane.addFolder({ title: 'General' })
 general.addBinding(params, 'cellSize', {
   label: 'cell size',
   min: 1,
@@ -33,9 +34,8 @@ general.addBinding(params, 'style', {
   ],
 })
 
-
 const island = pane.addFolder({
-  title: 'island',
+  title: 'Island',
   expanded: true,
 })
 
@@ -54,26 +54,22 @@ island.addBinding(params.island, 'size_exponent', {
   max: 10,
   step: 0.01,
 })
-
-island.addBinding(params.island, 'point', {
-  x: {
-    min: -params.size / 2,
-    max: params.size / 2,
-    revert: true,
-  },
-  y: {
-    min: -params.size / 2,
-    max: params.size / 2,
-    revert: true,
-  },
+island.addBinding(params.island, 'animate_direction', {
+  label: 'animate direction',
+  view: 'list',
+  options: [
+    { text: 'none', value: 1 },
+    { text: 'top', value: 2 },
+    { text: 'down', value: 3 },
+    { text: 'left', value: 4 },
+    { text: 'right', value: 5 },
+  ],
 })
-
 
 pane.addBlade({ view: 'separator' })
 
-
 const elevation = pane.addFolder({
-  title: 'elevation',
+  title: 'Elevation',
   expanded: false,
 })
 
@@ -110,7 +106,7 @@ elevation.addBinding(params.elevation, 'lacunarity', {
 
 pane.addBlade({ view: 'separator' })
 const moisture = pane.addFolder({
-  title: 'moisture',
+  title: 'Moisture',
   expanded: false,
 })
 moisture.addBinding(params.moisture, 'seed', {
@@ -143,8 +139,20 @@ moisture.addBinding(params.moisture, 'lacunarity', {
 //   max: 4,
 //   step: 0.1,
 // })
+pane.addBlade({ view: 'separator' })
 
-pane.addButton({ title: 'generate' }).on('click', () => {
+const info = pane.addFolder({ title: 'Info', expanded: false })
+info.addBlade({
+  view: 'infodump',
+  // eslint-disable-next-line style/max-len
+  content: `Procedural Island Generator is a WebGL-powered tool that creates random islands or terrains using Perlin noise and Fractional Brownian Motion.
+  You can find the [Source Code](https://github.com/42arch/procedural-island-generator) on GitHub.
+  `,
+  markdown: true,
+})
+pane.addBlade({ view: 'separator' })
+
+pane.addButton({ title: 'Generate' }).on('click', () => {
   params.elevation.seed = getRandomNumber(1, 100000)
   params.moisture.seed = getRandomNumber(1, 100000)
   pane.refresh()

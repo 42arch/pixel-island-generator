@@ -28,6 +28,7 @@ class View {
   private controls: OrbitControls
   private group: Group
   private params: Params
+  private material: ShaderMaterial | null
 
   constructor(element: string, params: Params) {
     this.canvas = document.querySelector(element) as HTMLElement
@@ -60,6 +61,7 @@ class View {
     this.group = new Group()
     this.scene.add(this.group)
 
+    this.material = null
     this.resize()
     // this.addLight()
     this.render()
@@ -84,6 +86,9 @@ class View {
 
     this.renderer.render(this.scene, this.camera)
     this.controls.update()
+    if (this.material) {
+      this.material.uniforms.uTime.value += 0.01
+    }
     window.requestAnimationFrame(this.animate.bind(this))
   }
 
@@ -105,13 +110,15 @@ class View {
 
     const material = new ShaderMaterial({
       uniforms: {
+        uTime: { value: 0 },
         uSize: { value: size },
         uCellSize: { value: cellSize },
+        uAnimateDirection: { value: this.params.island.animate_direction },
         uPixelate: { value: this.params.pixelate },
         uOpacity: { value: this.params.opacity },
-        uStyle: {value: this.params.style},
+        uStyle: { value: this.params.style },
         uShape: { value: this.params.island.shape },
-        uSizeExponent: { value: this.params.island.size_exponent }, 
+        uSizeExponent: { value: this.params.island.size_exponent },
         uIslandPoint: { value: this.params.island.point },
         uElevationSeed: { value: elevation.seed },
         uElevationScale: { value: elevation.scale },
@@ -142,8 +149,8 @@ class View {
       size,
     )
     const material = this.createFbmMaterial()
+    this.material = material
     const mesh = new Mesh(geometry, material)
-
     this.group.add(mesh)
   }
 
@@ -185,8 +192,16 @@ pane.on('change', (e) => {
   }
 })
 
-pane.addButton({ title: 'export' }).on('click', () => {
+pane.addButton({ title: 'Export' }).on('click', () => {
   view.export()
+})
+
+pane.addButton({ title: 'Share' }).on('click', () => {
+  setParamsInUrl(params)
+  const url = new URL(window.location.href)
+  void navigator.clipboard.writeText(url.href).then(() => {
+    console.log('Text copied to clipboard')
+  })
 })
 
 // mixpanel.init('c3fea8462457eeab84bf04985ab48a42', {

@@ -15,6 +15,7 @@ export interface Params {
   island: {
     shape: 1 | 2 | 3, // 'circle' | 'square' | 'diamond'
     size_exponent: number,
+    animate_direction: 1 | 2 | 3 | 4 | 5, // 'none' | 'top' | 'down' | 'left' | 'right'
     point: {
       x: number
       y: number
@@ -34,6 +35,7 @@ export const params: Params = {
   island: {
     shape: 1,
     size_exponent: 2,
+    animate_direction: 1,
     point: {
       x: 0,
       y: 0,

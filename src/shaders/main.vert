@@ -4,6 +4,8 @@
 uniform float uSize;
 uniform float uCellSize;
 uniform bool uPixelate;
+uniform int uAnimateDirection;
+uniform float uTime;
 uniform int uShape;
 uniform float uSizeExponent;
 uniform vec2 uIslandPoint;
@@ -24,7 +26,27 @@ varying float vElevation;
 varying float vMoisture;
 
 void main() {
-  vec2 pos = (uv - 0.5) * uSize;
+  vec2 newUv = uv;
+  switch (uAnimateDirection) {
+    case 1:
+      break;
+    case 2:
+      newUv = vec2(uv.x, uv.y - uTime * 0.03);
+      break;
+    case 3:
+      newUv = vec2(uv.x, uv.y + uTime * 0.03);
+      break;
+    case 4:
+      newUv = vec2(uv.x - uTime * 0.03, uv.y);
+      break;
+    case 5:
+      newUv = vec2(uv.x + uTime * 0.03, uv.y);
+      break;
+    default:
+      break;
+  }
+
+  vec2 pos = (newUv - 0.5) * uSize;
   vec2 cell = floor(pos / uCellSize);
   
   vec2 cellPos = cell * uCellSize;
